@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  web:
+    build:
+      context: .            # El punto indica que el Dockerfile está en la raíz
+      dockerfile: Dockerfile
+    container_name: mi_apache
+    volumes:
+      - ./www/IslaTransfers_PHP:/var/www/html
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    command: >
+      bash -c "sed -ri -e 's!/var/www/html!/var/www/html/public!g' 
+      /etc/apache2/sites-available/000-default.conf && apache2-foreground"
+
+  db:
+    image: mysql:8
+    container_name: islatransfers
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: islatransfers_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpass
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: mi_phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_USER: user
+      PMA_PASSWORD: userpass
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+  wordpress:
+    image: wordpress:latest
+    container_name: mi_wordpress
+    depends_on:
+      - db
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: user
+      WORDPRESS_DB_PASSWORD: userpass
+      WORDPRESS_DB_NAME: PHPeros_db
+    ports:
+      - "8081:80"
