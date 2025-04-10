@@ -13,8 +13,9 @@ class Usuario {
 
     public function crearUsuario($datos) {
         try {
-            $sql = "INSERT INTO usuarios (email, password, nombre, rol, fecha_registro)
-                    VALUES (:email, :password, :nombre, :rol, NOW())";
+            $sql = "INSERT INTO usuarios (email, password, nombre, rol)
+                    VALUES (:email, :password, :nombre, :rol)";
+
             $stmt = $this->conexion->prepare($sql);
 
             $hashedPassword = password_hash($datos['password'], PASSWORD_DEFAULT);
