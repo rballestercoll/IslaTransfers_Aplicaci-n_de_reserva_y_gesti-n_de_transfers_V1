@@ -97,46 +97,5 @@ class LoginController {
         header('Location: ?controller=Login&action=showLoginForm');
         exit();
     }
-
-    public function processRegister() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-    
-        if (!empty($_POST['email']) && !empty($_POST['password'])) {
-            $email    = trim($_POST['email']);
-            $password = $_POST['password'];
-            $nombre   = trim($_POST['nombre'] ?? '');
-            // Recibimos el rol desde el formulario (si no llega, asumimos 'particular')
-            $rol      = $_POST['rol'] ?? 'particular';
-    
-            $usuarioModel = new Usuario();
-            // Ver si el email ya está registrado
-            if ($usuarioModel->buscarPorEmail($email)) {
-                $_SESSION['error_registro'] = "El email ya está en uso. Prueba con otro.";
-                header('Location: ?controller=Login&action=showRegisterForm');
-                exit();
-            }
-    
-            $exito = $usuarioModel->crearUsuario([
-                'email'    => $email,
-                'password' => $password,
-                'nombre'   => $nombre,
-                'rol'      => $rol
-            ]);
-    
-            if ($exito) {
-                $_SESSION['mensaje_registro'] = "Registro exitoso. Ya puedes iniciar sesión.";
-                header('Location: ?controller=Login&action=showLoginForm');
-            } else {
-                $_SESSION['error_registro'] = "Ocurrió un problema al registrar. Intenta de nuevo.";
-                header('Location: ?controller=Login&action=showRegisterForm');
-            }
-        } else {
-            $_SESSION['error_registro'] = "Debes llenar al menos Email y Contraseña.";
-            header('Location: ?controller=Login&action=showRegisterForm');
-        }
-        exit();
-    }
     
 }
