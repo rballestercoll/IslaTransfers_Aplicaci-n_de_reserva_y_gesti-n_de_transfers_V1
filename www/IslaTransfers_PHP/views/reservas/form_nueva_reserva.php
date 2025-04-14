@@ -35,6 +35,12 @@
 
     <label>Hora del vuelo:</label>
     <input type="time" name="hora_vuelo_salida"><br>
+
+    <label>Número de vuelo:</label>
+    <input type="text" name="numero_vuelo_salida"><br>
+
+    <label>Hora de recogida:</label>
+    <input type="time" name="hora_recogida"><br>
   </div>
 
   <label>ID del hotel:</label>

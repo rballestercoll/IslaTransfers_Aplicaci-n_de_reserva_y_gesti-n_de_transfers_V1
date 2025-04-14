@@ -87,6 +87,8 @@ class ReservaController {
             if ($tipo == 2 || $tipo == 3) {
                 $datos['fecha_vuelo_salida'] = $_POST['fecha_vuelo_salida'] ?? null;
                 $datos['hora_vuelo_salida'] = $_POST['hora_vuelo_salida'] ?? null;
+                $datos['numero_vuelo_salida'] = $_POST['numero_vuelo_salida'] ?? null;
+                $datos['hora_recogida']       = $_POST['hora_recogida'] ?? null;
             }
     
             require_once __DIR__ . '/../models/Reserva.php';

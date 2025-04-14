@@ -8,7 +8,7 @@ require_once __DIR__ . '/../templates/header.php';
 <p>Bienvenido, administrador. Aquí puedes gestionar las reservas.</p>
 
 <ul>
-  <li><a href="?controller=Reserva&action=formNueva">Crear nueva reserva</a></li>
+  <li><a href="?controller=Reserva&action=crear">Crear nueva reserva</a></li>
   <li><a href="?controller=Reserva&action=listarTodas">Ver todas las reservas</a></li>
 </ul>
 
