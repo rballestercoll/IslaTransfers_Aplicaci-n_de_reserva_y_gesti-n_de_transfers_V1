@@ -1,8 +1,11 @@
 <h2>Crear Nueva Reserva</h2>
 
-<form method="post" action="?controller=Reserva&action=guardar">
-  <label for="tipo_reserva">Tipo de reserva:</label>
-  <select name="tipo_reserva" id="tipo_reserva" required>
+<form method="post" action="?controller=Admin&action=guardar">
+  <label>Email del cliente:</label>
+  <input type="email" name="email_cliente" required><br><br>
+
+  <label for="tipo_reserva">Tipo de trayecto:</label>
+  <select name="id_tipo_reserva" id="tipo_reserva" required>
     <option value="1">Aeropuerto → Hotel</option>
     <option value="2">Hotel → Aeropuerto</option>
     <option value="3">Ida y Vuelta</option>
@@ -10,6 +13,7 @@
 
   <!-- Trayecto Aeropuerto -> Hotel -->
   <div id="aeropuerto_hotel" class="trayecto">
+    <h4>Aeropuerto → Hotel</h4>
     <label>Día de llegada:</label>
     <input type="date" name="fecha_entrada"><br>
 
@@ -25,24 +29,25 @@
 
   <!-- Trayecto Hotel -> Aeropuerto -->
   <div id="hotel_aeropuerto" class="trayecto">
-    <label>Día del vuelo:</label>
+    <h4>Hotel → Aeropuerto</h4>
+    <label>Fecha del vuelo:</label>
     <input type="date" name="fecha_vuelo_salida"><br>
 
     <label>Hora del vuelo:</label>
     <input type="time" name="hora_vuelo_salida"><br>
-
-    <label>Hora de recogida:</label>
-    <input type="time" name="hora_recogida"><br>
   </div>
 
-  <label>Hotel:</label>
-  <input type="text" name="hotel" required><br>
+  <label>ID del hotel:</label>
+  <input type="number" name="id_hotel" required><br><br>
+
+  <label>ID del destino:</label>
+  <input type="number" name="id_destino" required><br><br>
+
+  <label>ID del vehículo:</label>
+  <input type="number" name="id_vehiculo" required><br><br>
 
   <label>Número de viajeros:</label>
-  <input type="number" name="num_viajeros" min="1" required><br>
-
-  <label>Email del cliente:</label>
-  <input type="email" name="email_cliente" required><br>
+  <input type="number" name="num_viajeros" min="1" required><br><br>
 
   <button type="submit">Guardar reserva</button>
 </form>
@@ -53,8 +58,16 @@ document.getElementById('tipo_reserva').addEventListener('change', function() {
   document.getElementById('aeropuerto_hotel').style.display = (tipo == 1 || tipo == 3) ? 'block' : 'none';
   document.getElementById('hotel_aeropuerto').style.display = (tipo == 2 || tipo == 3) ? 'block' : 'none';
 });
+window.addEventListener('DOMContentLoaded', function () {
+  document.getElementById('tipo_reserva').dispatchEvent(new Event('change'));
+});
 </script>
 
 <style>
-.trayecto { display: none; margin-top: 10px; padding: 10px; background: #eef; }
+.trayecto {
+  display: none;
+  background: #eef;
+  padding: 10px;
+  margin: 10px 0;
+}
 </style>
