@@ -36,6 +36,7 @@ unset($_SESSION['error_registro'], $_SESSION['mensaje_registro']);
     <label for="rol">Tipo de usuario:</label>
     <select name="rol">
       <option value="particular">Particular</option>
+      <option value="corportativo">Corportativo</option>
       <option value="admin">Administrador</option>
     </select><br><br>
 
