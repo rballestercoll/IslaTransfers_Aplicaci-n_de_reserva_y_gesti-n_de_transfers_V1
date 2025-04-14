@@ -27,5 +27,19 @@ class ReservaController {
         require_once __DIR__ . '/../views/reservas/lista_reservas.php';
     }
 
-}
+    public function crear() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
+        // Solo accesible si eres admin
+        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'admin') {
+            echo "⛔ Acceso no autorizado.";
+            exit();
+        }
+
+        // Mostramos el formulario de nueva reserva
+        require_once __DIR__ . '/../views/reservas/form_nueva_reserva.php';
+    }
+
+}
