@@ -25,7 +25,7 @@ class LoginController {
 
             if ($usuario && password_verify($password, $usuario['password'])) {
                 // Credenciales correctas
-                $_SESSION['usuario_id']    = $usuario['id'];
+                $_SESSION['usuario_id']    = $usuario['id_usuario'];
                 $_SESSION['usuario_email'] = $usuario['email'];
                 $_SESSION['usuario_rol']   = $usuario['rol'];
 

@@ -22,17 +22,20 @@ $rolUsuario      = $_SESSION['usuario_rol'] ?? null;
       <li><a href="#">Servicios</a></li>
       <li><a href="#">Contacto</a></li>
       <?php if (!$usuarioLogueado): ?>
-        <!-- Si NO está logueado, mostramos enlaces a login y registro -->
-        <li><a href="?controller=Login&action=showLoginForm">Iniciar Sesión</a></li>
-        <li><a href="?controller=Login&action=showRegisterForm">Registrarse</a></li>
+      <!-- Si NO está logueado, mostramos enlaces a login y registro -->
+        <a href="?controller=Login&action=showLoginForm">Iniciar Sesión</a>
+        <a href="?controller=Login&action=showRegisterForm">Registrarse</a>
       <?php else: ?>
-        <li><a href="?controller=Login&action=logout">Cerrar Sesión</a></li>
         <?php if ($rolUsuario === 'admin'): ?>
-          <li><a href="?controller=Admin&action=dashboard">Panel Admin</a></li>
-        <?php else: ?>
-          <li><a href="?controller=Reserva&action=listar">Mis Reservas</a></li>
+          <a href="?controller=Admin&action=panel">Panel Admin</a>
+        <?php elseif ($rolUsuario === 'particular'): ?>
+          <a href="?controller=Reserva&action=listar">Mis Reservas</a>
+        <?php elseif ($rolUsuario === 'corporativo'): ?>
+          <a href="?controller=Reserva&action=corporativo">Reservas del Hotel</a>
         <?php endif; ?>
+        <a href="?controller=Login&action=logout">Cerrar Sesión</a>
       <?php endif; ?>
+
     </ul>
   </nav>
 </header>
