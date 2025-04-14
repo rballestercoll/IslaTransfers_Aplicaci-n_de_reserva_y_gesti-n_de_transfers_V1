@@ -15,22 +15,25 @@ class Usuario {
         try {
             $sql = "INSERT INTO usuarios (email, password, nombre, rol)
                     VALUES (:email, :password, :nombre, :rol)";
-
+    
             $stmt = $this->conexion->prepare($sql);
-
             $hashedPassword = password_hash($datos['password'], PASSWORD_DEFAULT);
-
+    
             $stmt->execute([
                 ':email'    => $datos['email'],
                 ':password' => $hashedPassword,
                 ':nombre'   => $datos['nombre'] ?? '',
                 ':rol'      => $datos['rol'] ?? 'particular'
             ]);
+    
             return true;
+    
         } catch (PDOException $e) {
+            echo "<pre style='color:red;'>❌ Error al crear usuario: " . $e->getMessage() . "</pre>";
             return false;
-        }
+        }        
     }
+    
 
     public function buscarPorEmail($email) {
         try {
