@@ -47,46 +47,60 @@ class ReservaController {
             session_start();
         }
     
-        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'admin') {
-            echo "⛔ Acceso no autorizado.";
+        if (!isset($_SESSION['usuario_id'])) {
+            header('Location: ?controller=Login&action=showLoginForm');
             exit();
         }
     
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Recoger los datos
+            $usuarioId = $_SESSION['usuario_id'];
+            $tipo      = $_POST['tipo_reserva'];
+            $hotelId   = $_POST['hotel'] ?? null;
+            $destinoId = $_POST['destino'] ?? null;
+            $vehiculoId = $_POST['vehiculo'] ?? null;
+            $numViajeros = $_POST['num_viajeros'] ?? 1;
+            $localizador = strtoupper(uniqid('RES'));
+    
+            // Datos comunes
+            $datos = [
+                'id_usuario'         => $usuarioId,
+                'localizador'        => $localizador,
+                'id_tipo_reserva'    => $tipo,
+                'id_hotel'           => $hotelId,
+                'id_destino'         => $destinoId,
+                'id_vehiculo'        => $vehiculoId,
+                'num_viajeros'       => $numViajeros,
+                'fecha_reserva'      => date('Y-m-d H:i:s'),
+                'fecha_modificacion' => date('Y-m-d H:i:s'),
+            ];
+    
+            // AEROPUERTO → HOTEL
+            if ($tipo == 1 || $tipo == 3) {
+                $datos['fecha_entrada']       = $_POST['fecha_entrada'] ?? null;
+                $datos['hora_entrada']        = $_POST['hora_entrada'] ?? null;
+                $datos['numero_vuelo_entrada'] = $_POST['numero_vuelo_entrada'] ?? null;
+                $datos['origen_vuelo_entrada'] = $_POST['origen_vuelo_entrada'] ?? null;
+            }
+    
+            // HOTEL → AEROPUERTO
+            if ($tipo == 2 || $tipo == 3) {
+                $datos['fecha_vuelo_salida'] = $_POST['fecha_vuelo_salida'] ?? null;
+                $datos['hora_vuelo_salida'] = $_POST['hora_vuelo_salida'] ?? null;
+            }
+    
             require_once __DIR__ . '/../models/Reserva.php';
             $reservaModel = new Reserva();
     
-            // Creamos un localizador único
-            $localizador = strtoupper(uniqid('RES-'));
+            $exito = $reservaModel->crearReserva($datos);
     
-            // Obtenemos datos del formulario
-            $datos = [
-                'localizador'           => $localizador,
-                'id_hotel'              => $_POST['id_hotel'] ?? null,
-                'id_tipo_reserva'       => $_POST['tipo_reserva'],
-                'email_cliente'         => $_POST['email_cliente'],
-                'fecha_reserva'         => date('Y-m-d H:i:s'),
-                'fecha_modificacion'    => date('Y-m-d H:i:s'),
-                'id_destino'            => $_POST['id_destino'] ?? null,
-                'fecha_entrada'         => $_POST['fecha_entrada'] ?? null,
-                'hora_entrada'          => $_POST['hora_entrada'] ?? null,
-                'numero_vuelo_entrada'  => $_POST['numero_vuelo_entrada'] ?? null,
-                'origen_vuelo_entrada'  => $_POST['origen_vuelo_entrada'] ?? null,
-                'hora_vuelo_salida'     => $_POST['hora_vuelo_salida'] ?? null,
-                'fecha_vuelo_salida'    => $_POST['fecha_vuelo_salida'] ?? null,
-                'num_viajeros'          => $_POST['num_viajeros'],
-                'id_vehiculo'           => $_POST['id_vehiculo'] ?? null
-            ];
-    
-            $resultado = $reservaModel->crearReserva($datos);
-    
-            if ($resultado) {
-                echo "<p style='color:green;'>✅ Reserva creada con éxito. Localizador: <strong>{$localizador}</strong></p>";
+            if ($exito) {
+                header('Location: ?controller=Reserva&action=listar');
             } else {
                 echo "<p style='color:red;'>❌ Error al guardar la reserva.</p>";
             }
         } else {
-            echo "⚠ Método no permitido.";
+            echo "Acceso no permitido.";
         }
     }    
 
