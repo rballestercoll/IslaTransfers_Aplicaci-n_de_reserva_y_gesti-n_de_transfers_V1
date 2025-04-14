@@ -59,7 +59,7 @@ class LoginController {
             $email    = trim($_POST['email']);
             $password = $_POST['password'];
             $nombre   = trim($_POST['nombre'] ?? '');
-            $rol      = 'particular'; // Rol por defecto
+            $rol = $_POST['rol'] ?? 'particular'; // Toma el valor del formulario, o 'particular' si no existe
 
             $usuarioModel = new Usuario();
             if ($usuarioModel->buscarPorEmail($email)) {

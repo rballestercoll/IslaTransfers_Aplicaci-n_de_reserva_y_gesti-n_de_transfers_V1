@@ -16,9 +16,9 @@
 
   <label>Tipo de usuario:</label><br>
   <select name="rol">
-    <option value="particular">Particular</option>
-    <option value="corporativo">Corporativo</option>
-    <option value="admin">Administrador</option>
+  <option value="particular">Particular</option>
+  <option value="corporativo">Corporativo</option>
+  <option value="admin">Administrador</option>
   </select><br><br>
 
   <input type="submit" value="Registrarse">
