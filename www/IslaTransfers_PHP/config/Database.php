@@ -1,10 +1,10 @@
 <?php
 // config/Database.php
 
-define('DB_HOST', 'db');                // Servicio en Docker
-define('DB_NAME', 'islatransfers_db');  // Nombre de la BD
-define('DB_USER', 'user');
-define('DB_PASS', 'userpass');
+define('DB_HOST', 'localhost');           // Servidor local
+define('DB_NAME', 'isla_transfers');      // Nombre real de la base de datos
+define('DB_USER', 'root');                // Usuario local
+define('DB_PASS', 'root');                    // Contraseña
 define('DB_CHARSET', 'utf8mb4');
 
 class Database {
@@ -27,7 +27,7 @@ class Database {
                 ];
                 $this->pdo = new PDO($dsn, $this->user, $this->pass, $options);
             } catch (PDOException $e) {
-                die("Error de conexión a la BD: " . $e->getMessage());
+                die("❌ Error de conexión a la BD: " . $e->getMessage());
             }
         }
         return $this->pdo;
