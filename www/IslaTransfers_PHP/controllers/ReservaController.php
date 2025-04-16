@@ -44,7 +44,8 @@ class ReservaController
     {
         // Solo admin puede usar esto, si lo deseas
         if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'admin') {
-            echo "⛔ Acceso no autorizado.";
+            $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '⛔ Acceso no autorizado.'];
+            header('Location: index.php');
             exit();
         }
 
@@ -58,8 +59,9 @@ class ReservaController
      */
     public function guardar()
     {
-        if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_rol'] !== 'admin') {
-            echo "⛔ Acceso no autorizado.";
+        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'admin') {
+            $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '⛔ Acceso no autorizado.'];
+            header('Location: index.php');
             exit();
         }
 
@@ -104,8 +106,9 @@ class ReservaController
      */
     public function crearParticular()
     {
-        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'particular') {
-            echo "⛔ Acceso no autorizado.";
+        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'admin') {
+            $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '⛔ Acceso no autorizado.'];
+            header('Location: index.php');
             exit();
         }
 
@@ -118,8 +121,9 @@ class ReservaController
      */
     public function guardarParticular()
     {
-        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'particular') {
-            echo "⛔ Acceso no autorizado.";
+        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'admin') {
+            $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '⛔ Acceso no autorizado.'];
+            header('Location: index.php');
             exit();
         }
 
@@ -182,8 +186,9 @@ class ReservaController
      */
     public function editarParticular()
     {
-        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'particular') {
-            echo "⛔ Acceso no autorizado.";
+        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'admin') {
+            $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '⛔ Acceso no autorizado.'];
+            header('Location: index.php');
             exit();
         }
 
@@ -203,8 +208,12 @@ class ReservaController
 
         // Verificar que la reserva pertenezca al usuario logueado (opcional, por seguridad)
         if ((int)$reserva['id_usuario'] !== (int)$_SESSION['usuario_id']) {
-            echo "⛔ No tienes permisos para editar esta reserva.";
-            return;
+            $_SESSION['popup'] = [
+                'tipo' => 'error',
+                'texto' => '⛔ No tienes permisos para cancelar esta reserva.'
+            ];
+            header('Location: index.php'); // o a otra vista que tenga lógica para mostrar el popup
+            exit();
         }
 
         // Comprobamos cuántas horas faltan para la fecha/hora del trayecto principal
@@ -228,8 +237,9 @@ class ReservaController
      */
     public function actualizarParticular()
     {
-        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'particular') {
-            echo "⛔ Acceso no autorizado.";
+        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'admin') {
+            $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '⛔ Acceso no autorizado.'];
+            header('Location: index.php');
             exit();
         }
 
@@ -248,8 +258,12 @@ class ReservaController
 
             // Verificar que sea del usuario
             if ((int)$reserva['id_usuario'] !== (int)$_SESSION['usuario_id']) {
-                echo "⛔ No tienes permisos para editar esta reserva.";
-                return;
+                $_SESSION['popup'] = [
+                    'tipo' => 'error',
+                    'texto' => '⛔ No tienes permisos para cancelar esta reserva.'
+                ];
+                header('Location: index.php'); // o a otra vista que tenga lógica para mostrar el popup
+                exit();
             }
 
             // Verificamos las 48h
@@ -298,8 +312,9 @@ class ReservaController
      */
     public function cancelarParticular()
     {
-        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'particular') {
-            echo "⛔ Acceso no autorizado.";
+        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'admin') {
+            $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '⛔ Acceso no autorizado.'];
+            header('Location: index.php');
             exit();
         }
 
@@ -317,8 +332,12 @@ class ReservaController
 
         // Verificar dueño de la reserva
         if ((int)$reserva['id_usuario'] !== (int)$_SESSION['usuario_id']) {
-            echo "⛔ No tienes permisos para cancelar esta reserva.";
-            return;
+            $_SESSION['popup'] = [
+                'tipo' => 'error',
+                'texto' => '⛔ No tienes permisos para cancelar esta reserva.'
+            ];
+            header('Location: index.php'); // o a otra vista que tenga lógica para mostrar el popup
+            exit();
         }
 
         // Chequeo 48h

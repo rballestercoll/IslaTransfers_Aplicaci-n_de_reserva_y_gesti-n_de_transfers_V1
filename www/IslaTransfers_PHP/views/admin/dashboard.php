@@ -1,4 +1,4 @@
-// views/admin/dashboard.php
+
 <?php require_once __DIR__ . '/../templates/header.php'; ?>
 <main class="page-content">
   <div class="admin-dashboard">

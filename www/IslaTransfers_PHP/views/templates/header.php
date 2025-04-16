@@ -17,6 +17,22 @@ $rolUsuario      = $_SESSION['usuario_rol'] ?? null;
   <title>Isla Transfers</title>
   <link rel="stylesheet" href="assets/css/estilo.css" />
 </head>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (isset($_SESSION['popup'])):
+    $mensaje = $_SESSION['popup']['texto'];
+    $tipo = $_SESSION['popup']['tipo'];
+    unset($_SESSION['popup']);
+    ?>
+    <script>
+        window.onload = function () {
+            alert("<?= addslashes($mensaje) ?>");
+        };
+    </script>
+<?php endif; ?>
+
 <body>
 <header class="main-header">
   <div class="header-container">

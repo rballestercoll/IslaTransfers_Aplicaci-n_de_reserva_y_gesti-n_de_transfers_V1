@@ -60,14 +60,27 @@ class AdminController {
             $guardado = $reservaModel->crearReserva($datos);
 
             if ($guardado) {
-                echo "<p style='color:green;'>✅ Reserva creada correctamente.</p>";
-                // Aquí se podría redirigir o mostrar un mensaje
-                // header('Location: ?controller=Admin&action=dashboard');
+                $_SESSION['popup'] = [
+                    'tipo' => 'success',
+                    'texto' => '✅ Reserva creada correctamente.'
+                ];
+                header('Location: ?controller=Admin&action=dashboard');
+                exit();
             } else {
-                echo "<p style='color:red;'>❌ No se pudo crear la reserva.</p>";
+                $_SESSION['popup'] = [
+                    'tipo' => 'error',
+                    'texto' => '❌ No se pudo crear la reserva.'
+                ];
+                header('Location: ?controller=Reserva&action=crear'); // o vuelve al formulario
+                exit();
             }
         } else {
-            echo "<p style='color:red;'>Acceso no válido.</p>";
+            $_SESSION['popup'] = [
+                'tipo' => 'error',
+                'texto' => '⛔ Acceso no válido.'
+            ];
+            header('Location: index.php');
+            exit();
         }
     }
 

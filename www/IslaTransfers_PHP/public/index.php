@@ -51,6 +51,23 @@ if (isset($_GET['controller']) && isset($_GET['action'])) {
     ?>
     
     <main>
+      <?php
+      if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+      // Mostrar mensajes tipo popup si existen
+      if (isset($_SESSION['popup'])):
+          $mensaje = $_SESSION['popup']['texto'];
+          $tipo = $_SESSION['popup']['tipo'];
+          unset($_SESSION['popup']); // Eliminar el mensaje tras mostrarlo
+          ?>
+          <script>
+              window.onload = function () {
+                  alert("<?= addslashes($mensaje) ?>");
+              };
+          </script>
+      <?php endif; ?>
+
       <section class="presentacion">
         <h2>Bienvenido a Isla Transfers</h2>
         <p>Te ofrecemos traslados cómodos y seguros desde el aeropuerto hasta tu hotel y viceversa.</p>
