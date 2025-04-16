@@ -1,10 +1,10 @@
 <?php
 // config/Database.php
 
-define('DB_HOST', 'localhost');           // Servidor local
-define('DB_NAME', 'isla_transfers');      // Nombre real de la base de datos
-define('DB_USER', 'root');                // Usuario local
-define('DB_PASS', 'root');                    // Contraseña
+define('DB_HOST', 'db');           // Servidor local
+define('DB_NAME', 'islatransfers_db');      // Nombre real de la base de datos
+define('DB_USER', 'user');                // Usuario local
+define('DB_PASS', 'userpass');                    // Contraseña
 define('DB_CHARSET', 'utf8mb4');
 
 class Database {

@@ -1,8 +1,12 @@
 <?php
 // views/templates/header.php
 
-// Asumimos que la sesión ya está iniciada en index.php.
-// Podríamos usar las variables ya definidas en index.php, o volver a construirlas:
+// Aseguramos la sesión para poder leer $_SESSION
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Definimos estas variables para no tener warnings:
 $usuarioLogueado = isset($_SESSION['usuario_id']);
 $rolUsuario      = $_SESSION['usuario_rol'] ?? null;
 ?>
@@ -14,28 +18,29 @@ $rolUsuario      = $_SESSION['usuario_rol'] ?? null;
   <link rel="stylesheet" href="assets/css/estilo.css" />
 </head>
 <body>
-<header>
-  <h1>Isla Transfers</h1>
-  <nav>
-    <ul>
-      <li><a href="index.php">Inicio</a></li>
-      <li><a href="#">Servicios</a></li>
-      <li><a href="#">Contacto</a></li>
-      <?php if (!$usuarioLogueado): ?>
-      <!-- Si NO está logueado, mostramos enlaces a login y registro -->
-        <a href="?controller=Login&action=showLoginForm">Iniciar Sesión</a>
-        <a href="?controller=Login&action=showRegisterForm">Registrarse</a>
-      <?php else: ?>
-        <?php if ($rolUsuario === 'admin'): ?>
-          <a href="?controller=Admin&action=panel">Panel Admin</a>
-        <?php elseif ($rolUsuario === 'particular'): ?>
-          <a href="?controller=Reserva&action=listar">Mis Reservas</a>
-        <?php elseif ($rolUsuario === 'corporativo'): ?>
-          <a href="?controller=Reserva&action=corporativo">Reservas del Hotel</a>
-        <?php endif; ?>
-        <a href="?controller=Login&action=logout">Cerrar Sesión</a>
-      <?php endif; ?>
+<header class="main-header">
+  <div class="header-container">
+    <h1 class="site-title">Isla Transfers</h1>
+    <nav class="navbar">
+      <ul>
+        <li><a href="index.php">Inicio</a></li>
+        <li><a href="#">Servicios</a></li>
+        <li><a href="#">Contacto</a></li>
 
-    </ul>
-  </nav>
+        <?php if (!$usuarioLogueado): ?>
+          <li><a href="?controller=Login&action=showLoginForm">Iniciar Sesión</a></li>
+          <li><a href="?controller=Login&action=showRegisterForm">Registrarse</a></li>
+        <?php else: ?>
+          <?php if ($rolUsuario === 'admin'): ?>
+            <li><a href="?controller=Admin&action=dashboard">Panel Admin</a></li>
+          <?php elseif ($rolUsuario === 'particular'): ?>
+            <li><a href="?controller=Reserva&action=listar">Mis Reservas</a></li>
+          <?php elseif ($rolUsuario === 'corporativo'): ?>
+            <li><a href="?controller=Reserva&action=corporativo">Reservas del Hotel</a></li>
+          <?php endif; ?>
+          <li><a href="?controller=Login&action=logout">Cerrar Sesión</a></li>
+        <?php endif; ?>
+      </ul>
+    </nav>
+  </div>
 </header>

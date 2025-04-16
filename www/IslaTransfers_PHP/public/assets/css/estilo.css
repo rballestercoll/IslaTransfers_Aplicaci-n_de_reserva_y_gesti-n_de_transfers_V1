@@ -1,99 +1,194 @@
-/* assets/css/estilo.css */
-
-/* Reseteo básico */
+/* ==== RESET BÁSICO ==== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Estilos generales */
+/* ==== BODY ==== */
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background-color: #f5f5f5;
   color: #333;
-  background-color: #f2f2f2;
+  line-height: 1.5;
 }
 
-/* Encabezado */
-header {
+/* ==== HEADER ==== */
+.main-header {
   background-color: #0a488c;
-  padding: 1rem;
   color: #fff;
 }
 
-header h1 {
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-title {
+  font-size: 1.8rem;
   margin: 0;
 }
 
-nav ul {
+.navbar ul {
   list-style: none;
   display: flex;
   gap: 1rem;
-  margin-top: 0.5rem;
 }
 
-nav a {
+.navbar a {
   color: #fff;
   text-decoration: none;
+  font-weight: 500;
 }
-
-nav a:hover {
+.navbar a:hover {
   text-decoration: underline;
 }
 
-/* Sección de Presentación */
-.presentacion {
-  padding: 2rem;
+/* ==== FOOTER ==== */
+.main-footer {
+  background-color: #0a488c;
+  color: #fff;
+  padding: 1rem;
   text-align: center;
-  background-color: #fff;
-  margin: 1rem;
-  border-radius: 5px;
 }
 
-.presentacion h2 {
+/* ==== MAIN CONTENT WRAPPER ==== */
+.page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* ==== AUTENTICACIÓN (Login/Register) ==== */
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(
+    100vh - 160px
+  ); /* Ajustar para dejar sitio a header y footer */
+}
+
+.auth-card {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-title {
   margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #333;
+  text-align: center;
 }
 
-.presentacion p {
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  font-weight: bold;
+  display: block;
   margin-bottom: 0.5rem;
 }
 
-.boton-cta {
-  display: inline-block;
-  padding: 0.75rem 1.5rem;
-  background-color: #0a488c;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 3px;
-  margin-top: 1rem;
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.6rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-.boton-cta:hover {
+.btn-primary {
+  display: inline-block;
+  background-color: #0a488c;
+  color: #fff;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+.btn-primary:hover {
   background-color: #0c5cae;
 }
 
-/* Sección Info Destacada */
-.info-destacada {
-  padding: 2rem;
-  background-color: #fff;
-  margin: 1rem;
-  border-radius: 5px;
+/* Mensajes de error y éxito */
+.error-msg {
+  color: #d9534f;
+  margin-bottom: 1rem;
 }
-
-.info-destacada h3 {
+.success-msg {
+  color: #5cb85c;
   margin-bottom: 1rem;
 }
 
-.info-destacada ul {
-  list-style: disc inside;
-  margin-left: 1rem;
+.auth-switch {
+  margin-top: 1rem;
+  text-align: center;
+}
+.auth-switch a {
+  color: #0a488c;
+  text-decoration: none;
+}
+.auth-switch a:hover {
+  text-decoration: underline;
 }
 
-/* Pie de página */
-footer {
-  text-align: center;
-  padding: 1rem;
-  color: #fff;
-  background-color: #0a488c;
+.tabla-reservas {
+  width: 100%;
+  border-collapse: collapse;
   margin-top: 1rem;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tabla-reservas th,
+.tabla-reservas td {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.tabla-reservas th {
+  background-color: #f8f8f8;
+}
+.tabla-reservas tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.admin-dashboard {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+}
+.admin-options {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.btn-primary {
+  background-color: #0a488c;
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.btn-primary:hover {
+  background-color: #0c5cae;
 }
