@@ -21,11 +21,23 @@ require_once __DIR__ . '/../templates/header.php';
     </select><br><br>
 
     <!-- Rellenar los mismos campos que en crearReserva -->
-    <label>ID Hotel:</label>
-    <input type="number" name="id_hotel" value="<?= $reserva['id_hotel'] ?? '' ?>" required><br><br>
+    <label>Hotel de Recogida:</label>
+    <select name="id_hotel" value="<?= $reserva['id_hotel'] ?? '' ?>" required>
+      <option value="HOTEL_BAHIA">Hotel Bahía</option>
+      <option value="HOTEL_SOL">Hotel Sol</option>
+      <option value="HOTEL_MAR">Hotel Mar</option>
+      <option value="HOTEL_MONTAÑA">Hotel Montaña</option>
+      <option value="HOTEL_CIUDAD">Hotel Ciudad</option>
+    </select><br><br>
 
-    <label>ID Destino:</label>
-    <input type="number" name="id_destino" value="<?= $reserva['id_destino'] ?? '' ?>" required><br><br>
+    <label>Hotel de Destino:</label>
+    <select name="id_destino" value="<?= $reserva['id_destino'] ?? '' ?>" required>
+      <option value="HOTEL_BAHIA">Hotel Bahía</option>
+      <option value="HOTEL_SOL">Hotel Sol</option>
+      <option value="HOTEL_MAR">Hotel Mar</option>
+      <option value="HOTEL_MONTAÑA">Hotel Montaña</option>
+      <option value="HOTEL_CIUDAD">Hotel Ciudad</option>
+    </select><br><br>
 
     <label>Fecha Entrada:</label>
     <input type="date" name="fecha_entrada" value="<?= $reserva['fecha_entrada'] ?? '' ?>"><br><br>
@@ -54,8 +66,14 @@ require_once __DIR__ . '/../templates/header.php';
     <label>Número de viajeros:</label>
     <input type="number" name="num_viajeros" value="<?= $reserva['num_viajeros'] ?>" required><br><br>
 
-    <label>ID vehículo:</label>
-    <input type="number" name="id_vehiculo" value="<?= $reserva['id_vehiculo'] ?>" required><br><br>
+    <label>Vehículo:</label>
+    <select name="id_vehiculo" value="<?= $reserva['id_vehiculo'] ?>" required>
+      <option value="VEH_VAN1">Van de 8 plazas</option>
+      <option value="VEH_MINI2">HMinibus</option>
+      <option value="VEH_SEDAN3">Sedán Confort</option>
+      <option value="VEH_LUX4">Luxury Car</option>
+      <option value="VEH_BUS5">Autobús 25 pax</option>
+    </select><br><br>
 
     <button type="submit">Guardar cambios</button>
   </form>
