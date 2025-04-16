@@ -231,11 +231,11 @@ INSERT INTO `usuarios` (email, password, nombre, rol) VALUES
 -- [Opcional: insertar en transfer_reservas o transfer_precios si deseas datos iniciales]
 -- Por ejemplo, un precio ejemplo:
 INSERT INTO `transfer_precios` (id_vehiculo, id_hotel, Precio) VALUES
-('VEH_VAN1', 'HOTEL_BAHIA1', 35),
-('VEH_MINI2', 'HOTEL_SOL2', 40),
-('VEH_SEDAN3', 'HOTEL_MAR3', 45),
-('VEH_LUX4', 'HOTEL_MONT4', 60),
-('VEH_BUS5', 'HOTEL_CIUD5', 75);
+('VEH_VAN1', 'HOTEL_BAHIA', 35),
+('VEH_MINI2', 'HOTEL_SOL', 40),
+('VEH_SEDAN3', 'HOTEL_MAR', 45),
+('VEH_LUX4', 'HOTEL_MONTAÑA', 60),
+('VEH_BUS5', 'HOTEL_CIUDAD', 75);
 
 
 -- ----------------------------------------------------------------------
