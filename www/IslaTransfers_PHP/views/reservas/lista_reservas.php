@@ -13,6 +13,7 @@
           <th>Entrada</th>
           <th>Salida</th>
           <th>Viajeros</th>
+          <th>Origen</th> 
           <th>Acciones</th>
         </tr>
       </thead>
@@ -23,6 +24,13 @@
             <td><?= $r['fecha_entrada'].' '.$r['hora_entrada'] ?></td>
             <td><?= $r['fecha_vuelo_salida'].' '.$r['hora_vuelo_salida'] ?></td>
             <td><?= $r['num_viajeros'] ?></td>
+            <td>
+              <?php if ($r['creado_por'] === 'admin'): ?>
+                <span class="chip chip-admin">Admin</span>
+              <?php else: ?>
+                <span class="chip chip-user">Usuario</span>
+              <?php endif; ?>
+            </td>
             <td>
               <a href="?controller=Reserva&action=detalle&id=<?= $r['id_reserva'] ?>">Ver</a>
               <?php
@@ -38,6 +46,7 @@
           </tr>
         <?php endforeach; ?>
       </tbody>
+      
     </table>
   <?php endif; ?>
 </main>

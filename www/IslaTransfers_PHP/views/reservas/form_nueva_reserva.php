@@ -1,3 +1,4 @@
+<?php require_once __DIR__.'/../templates/header.php'; ?>
 <h2>Crear Nueva Reserva</h2>
 
 <form method="post" action="?controller=Admin&action=guardar">
@@ -96,3 +97,4 @@ window.addEventListener('DOMContentLoaded', function () {
   margin: 10px 0;
 }
 </style>
+<?php require_once __DIR__.'/../templates/footer.php'; ?>

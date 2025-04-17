@@ -1,9 +1,3 @@
--- ----------------------------------------------------------------------
--- SCRIPT SQL Corregido y Modificado
--- ID_HOTEL e ID_VEHICULO -> VARCHAR(50)
--- Además, se ajustan las FK correspondientes y se insertan 5 ejemplos
--- ----------------------------------------------------------------------
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -162,6 +156,7 @@ CREATE TABLE `transfer_reservas` (
   `hora_recogida` TIME DEFAULT NULL,
   `num_viajeros` INT NOT NULL,
   `id_vehiculo` VARCHAR(50) NOT NULL,
+  `creado_por` ENUM('usuario', 'admin') NOT NULL DEFAULT 'usuario',  -- Nueva columna
   PRIMARY KEY (`id_reserva`),
   KEY `FK_RESERVAS_DESTINO` (`id_destino`),
   KEY `FK_RESERVAS_HOTEL` (`id_hotel`),
@@ -225,8 +220,9 @@ INSERT INTO `transfer_tipo_reserva` (descripcion) VALUES
 
 -- Insertamos algunos usuarios de prueba
 INSERT INTO `usuarios` (email, password, nombre, rol) VALUES
-('admin@isla.com', '$2y$10$Qjl0.8wCkui3eAtLkIoYBEPkNgeELad/afhHTwO1VlX9V5Ef7FBxe', 'Admin Ejemplo', 'admin'),
-('user@isla.com', '$2y$10$4doNgIHpFETmEmu8LzHgK.3gAr4bcbjsfH2M1uOM5lNcfaRMyfh5S', 'Usuario Ejemplo', 'particular');
+('rafa@gmail.com', '$2y$10$kDh/j2pGfa8WhjaUH3IL7uHZF7DcwKQKv1jcamyUYzVP5BnxiIo2y', 'Rafa Admin', 'admin'),
+('rballestercoll@gmail.com', '$2y$10$jEXl7YrVE3iMnQ.Zzes5ae/R7ZQhnLgugiEGq2pkqkT732rT7wiKW', 'Rafa Particular', 'particular'),
+('rafaelius@gmail.com', '$2y$10$AQLYE70rNDo.3yu1bh.Bte/pXFM1cniCSFEGcL6ViMZs1xR9mpj9S', 'Rafa Corporativo', 'corporativo');
 
 -- [Opcional: insertar en transfer_reservas o transfer_precios si deseas datos iniciales]
 -- Por ejemplo, un precio ejemplo:

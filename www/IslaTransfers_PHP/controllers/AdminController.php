@@ -34,6 +34,11 @@ class AdminController {
                 }
             }
 
+            /* --- obtenemos el id_usuario real según email_cliente --- */
+            require_once __DIR__.'/../models/Usuario.php';
+            $usuarioModel = new Usuario();
+            $cliente      = $usuarioModel->buscarPorEmail(trim($_POST['email_cliente']));
+            $clienteId    = $cliente ? $cliente['id_usuario'] : null;   // null si no existe
             // Preparamos datos
             $reservaModel = new Reserva();
 
@@ -53,7 +58,8 @@ class AdminController {
                 'fecha_vuelo_salida'   => $_POST['fecha_vuelo_salida'],
                 'hora_vuelo_salida'    => $_POST['hora_vuelo_salida'],
                 'num_viajeros'         => $_POST['num_viajeros'],
-                'id_vehiculo'          => $_POST['id_vehiculo']
+                'id_vehiculo'          => $_POST['id_vehiculo'],
+                'creado_por'           => 'admin'
             ];
 
             // Guardar en base de datos

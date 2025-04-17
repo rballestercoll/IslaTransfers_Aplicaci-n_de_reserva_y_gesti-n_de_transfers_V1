@@ -78,8 +78,17 @@ if (isset($_GET['controller']) && isset($_GET['action'])) {
           <a href="?controller=Login&action=showLoginForm" class="boton-cta">Inicia Sesión</a>
           <a href="?controller=Login&action=showRegisterForm" class="boton-cta">Regístrate</a>
         <?php else: ?>
-          <!-- Invitación a hacer una reserva si el usuario ya está logueado -->
-          <a href="?controller=Reserva&action=crear" class="boton-cta">Reservar Ahora</a>
+          <!-- Comprobamos el tipo de usuario -->
+          <?php if ($_SESSION['usuario_rol'] === 'corporativo'): ?>
+            
+            <a href="?controller=Reserva&action=crearCorporativo" class="boton-cta">Reservar Ahora</a>
+          <?php elseif ($_SESSION['usuario_rol'] === 'particular'): ?>
+           
+            <a href="?controller=Reserva&action=crearParticular" class="boton-cta">Reservar Ahora</a>
+          <?php elseif ($_SESSION['usuario_rol'] === 'admin'): ?>
+            
+            <a href="?controller=Reserva&action=crear" class="boton-cta">Reservar Ahora</a>
+          <?php endif; ?>
         <?php endif; ?>
       </section>
 

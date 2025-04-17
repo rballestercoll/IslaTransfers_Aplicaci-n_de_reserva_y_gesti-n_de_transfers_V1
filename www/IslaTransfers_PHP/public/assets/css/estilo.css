@@ -192,3 +192,17 @@ body {
 .btn-primary:hover {
   background-color: #0c5cae;
 }
+
+.chip {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+.chip-admin {
+  background: #ffe0e0;
+  color: #c00;
+}
+.chip-user {
+  background: #e0ffe0;
+  color: #070;
+}

@@ -19,6 +19,7 @@ require_once __DIR__ . '/../templates/header.php';
           <th>Fecha Entrada</th>
           <th>Fecha Salida</th>
           <th>Nº Viajeros</th>
+          <th>Origen</th> 
           <th>Acciones</th>
         </tr>
       </thead>
@@ -32,6 +33,13 @@ require_once __DIR__ . '/../templates/header.php';
             <td><?= htmlspecialchars($reserva['fecha_entrada']) ?></td>
             <td><?= htmlspecialchars($reserva['fecha_vuelo_salida']) ?></td>
             <td><?= htmlspecialchars($reserva['num_viajeros']) ?></td>
+            <td>
+              <?php if ($reserva['creado_por'] === 'admin'): ?>
+                <span class="chip chip-admin">Admin</span>
+              <?php else: ?>
+                <span class="chip chip-user">Usuario</span>
+              <?php endif; ?>
+            </td>
             <td>
               <a href="?controller=Admin&action=editar&id=<?= $reserva['id_reserva'] ?>">Editar</a> |
               <a href="?controller=Admin&action=eliminar&id=<?= $reserva['id_reserva'] ?>"

@@ -19,14 +19,14 @@ class Reserva {
                 fecha_entrada, hora_entrada, numero_vuelo_entrada, 
                 origen_vuelo_entrada, hora_vuelo_salida, 
                 fecha_vuelo_salida, numero_vuelo_salida, hora_recogida, 
-                num_viajeros, id_vehiculo
+                num_viajeros, id_vehiculo, creado_por
             ) VALUES (
                 :id_usuario, :email_cliente, :localizador, :id_hotel, :id_tipo_reserva, 
                 :fecha_reserva, :fecha_modificacion, :id_destino,
                 :fecha_entrada, :hora_entrada, :numero_vuelo_entrada,
                 :origen_vuelo_entrada, :hora_vuelo_salida,
                 :fecha_vuelo_salida, :numero_vuelo_salida, :hora_recogida,
-                :num_viajeros, :id_vehiculo
+                :num_viajeros, :id_vehiculo, :creado_por
             )";            
 
             $stmt = $this->db->prepare($sql);
@@ -49,7 +49,8 @@ class Reserva {
                 ':numero_vuelo_salida'  => $datos['numero_vuelo_salida'] ?? null,
                 ':hora_recogida'        => $datos['hora_recogida'] ?? null,
                 ':num_viajeros'         => $datos['num_viajeros'],
-                ':id_vehiculo'          => $datos['id_vehiculo']
+                ':id_vehiculo'          => $datos['id_vehiculo'],
+                ':creado_por'           => $datos['creado_por']
             ]);            
         } catch (PDOException $e) {
             echo "<pre style='color:red;'>❌ Error al crear la reserva: " . $e->getMessage() . "</pre>";
@@ -57,12 +58,16 @@ class Reserva {
         }
     }
 
-    public function obtenerReservasPorUsuario($usuarioId) {
-        $sql = "SELECT * FROM transfer_reservas WHERE id_usuario = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([':id' => $usuarioId]);
-        return $stmt->fetchAll();
-    }
+    public function obtenerReservasPorUsuario($usuarioId, $usuarioEmail)
+{
+    $sql = "SELECT *
+              FROM transfer_reservas
+             WHERE id_usuario = :id
+                OR email_cliente = :email";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([':id' => $usuarioId, ':email' => $usuarioEmail]);
+    return $stmt->fetchAll();
+}
 
         // NUEVO: Lista todas las reservas sin filtrar (para admin)
     public function obtenerTodasLasReservas() {

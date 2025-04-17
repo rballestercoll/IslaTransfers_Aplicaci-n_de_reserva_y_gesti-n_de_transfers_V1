@@ -29,8 +29,9 @@ class ReservaController
             exit();
         }
 
-        $usuarioId = $_SESSION['usuario_id'];
-        $reservas = $this->reservaModel->obtenerReservasPorUsuario($usuarioId);
+        $usuarioId    = $_SESSION['usuario_id'];
+        $usuarioEmail = $_SESSION['usuario_email'];
+        $reservas = $this->reservaModel->obtenerReservasPorUsuario($usuarioId, $usuarioEmail);
 
         // Vista que muestra las reservas del usuario
         require_once __DIR__ . '/../views/reservas/lista_reservas.php';
@@ -164,7 +165,8 @@ class ReservaController
                 'numero_vuelo_salida'  => $_POST['numero_vuelo_salida'],
                 'hora_recogida'        => $_POST['hora_recogida'],
                 'num_viajeros'         => $_POST['num_viajeros'],
-                'id_vehiculo'          => $_POST['id_vehiculo']
+                'id_vehiculo'          => $_POST['id_vehiculo'],
+                'creado_por'           => 'usuario'
             ];
 
             $exito = $this->reservaModel->crearReserva($datos);
@@ -423,7 +425,8 @@ class ReservaController
                 'numero_vuelo_salida'  => $_POST['numero_vuelo_salida'],
                 'hora_recogida'        => $_POST['hora_recogida'],
                 'num_viajeros'         => $_POST['num_viajeros'],
-                'id_vehiculo'          => $_POST['id_vehiculo']
+                'id_vehiculo'          => $_POST['id_vehiculo'],
+                'creado_por'           => 'usuario'
             ];
 
             $exito = $this->reservaModel->crearReserva($datos);
