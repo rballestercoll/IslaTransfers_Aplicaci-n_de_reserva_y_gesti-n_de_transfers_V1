@@ -1,7 +1,7 @@
 <?php require_once __DIR__.'/../templates/header.php'; ?>
 
 <main class="page-content">
-  <h2>Mis reservas</h2>
+  <h1>Mis reservas</h1><br>
 
   <?php if (empty($reservas)): ?>
     <p>Aún no tienes reservas. <a href="?controller=Reserva&action=crearParticular">Haz una ahora</a></p>
