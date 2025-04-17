@@ -46,4 +46,47 @@ class Usuario {
             return false;
         }
     }
+
+    public function actualizarUsuario($id, $nombre, $email, $password = null)
+{
+    try {
+        $sql  = "UPDATE usuarios SET nombre = :nombre, email = :email";
+        if ($password !== null) {
+            $sql .= ", password = :password";
+        }
+        $sql .= " WHERE id_usuario = :id";
+        $stmt = $this->conexion->prepare($sql);
+
+        $params = [
+            ':nombre' => $nombre,
+            ':email'  => $email,
+            ':id'     => $id
+        ];
+        if ($password !== null) {
+            $params[':password'] = password_hash($password, PASSWORD_DEFAULT);
+        }
+        return $stmt->execute($params);
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+    public function eliminarUsuario($id) {
+        try {
+            $sql = "DELETE FROM usuarios WHERE id_usuario = :id";
+            $stmt = $this->conexion->prepare($sql);
+            return $stmt->execute([':id' => $id]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function listarUsuarios() {
+        try {
+            $sql = "SELECT * FROM usuarios";
+            $stmt = $this->conexion->query($sql);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 }
