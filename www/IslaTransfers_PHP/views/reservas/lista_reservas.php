@@ -3,8 +3,19 @@
 <main class="page-content">
   <h1>Mis reservas</h1><br>
 
+  <?php
+    // Verificar si el usuario está logueado y tiene rol
+    $rol = $_SESSION['usuario_rol'] ?? null;
+  ?>
+
   <?php if (empty($reservas)): ?>
-    <p>Aún no tienes reservas. <a href="?controller=Reserva&action=crearParticular">Haz una ahora</a></p>
+    <p>Aún no tienes reservas. 
+      <?php if ($rol === 'particular' || $rol === 'corporativo'): ?>
+        <a href="<?= $rol === 'particular' ? '?controller=Reserva&action=crearParticular' : '?controller=Reserva&action=crearCorporativo' ?>">Haz una ahora</a>
+      <?php else: ?>
+        <span>No tienes permiso para crear reservas.</span>
+      <?php endif; ?>
+    </p>
   <?php else: ?>
     <table class="tabla-reservas">
       <thead>
@@ -46,7 +57,6 @@
           </tr>
         <?php endforeach; ?>
       </tbody>
-      
     </table>
   <?php endif; ?>
 </main>

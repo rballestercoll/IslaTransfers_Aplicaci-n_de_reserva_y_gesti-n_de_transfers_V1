@@ -2,6 +2,7 @@
 // controllers/AdminController.php
 
 require_once __DIR__ . '/../models/Reserva.php';
+require_once __DIR__.'/../helpers/EmailHelper.php';
 
 class AdminController {
     public function dashboard() {
@@ -14,81 +15,85 @@ class AdminController {
         require_once __DIR__ . '/../views/admin/dashboard.php';
     }
 
-    public function guardar() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+    public function guardar()
+{
+    if (session_status() === PHP_SESSION_NONE) session_start();
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Validación básica
-            $campos = [
-                'email_cliente', 'id_hotel', 'id_tipo_reserva', 'id_destino',
-                'fecha_entrada', 'hora_entrada', 'numero_vuelo_entrada', 'origen_vuelo_entrada',
-                'fecha_vuelo_salida', 'hora_vuelo_salida', 'num_viajeros', 'id_vehiculo'
-            ];
+    /* Solo POST */
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        $_SESSION['popup'] = ['tipo'=>'error','texto'=>'⛔ Acceso no válido.'];
+        header('Location: index.php'); exit();
+    }
 
-            foreach ($campos as $campo) {
-                if (!isset($_POST[$campo]) || empty($_POST[$campo])) {
-                    echo "<p style='color:red;'>Falta el campo: $campo</p>";
-                    return;
-                }
-            }
-
-            /* --- obtenemos el id_usuario real según email_cliente --- */
-            require_once __DIR__.'/../models/Usuario.php';
-            $usuarioModel = new Usuario();
-            $cliente      = $usuarioModel->buscarPorEmail(trim($_POST['email_cliente']));
-            $clienteId    = $cliente ? $cliente['id_usuario'] : null;   // null si no existe
-            // Preparamos datos
-            $reservaModel = new Reserva();
-
-            $datos = [
-                'id_usuario'           => $_SESSION['usuario_id'],
-                'email_cliente'        => trim($_POST['email_cliente']),
-                'localizador'          => uniqid('RES_'), // Se genera automáticamente
-                'id_hotel'             => $_POST['id_hotel'],
-                'id_tipo_reserva'      => $_POST['id_tipo_reserva'],
-                'fecha_reserva'        => date('Y-m-d H:i:s'),
-                'fecha_modificacion'   => date('Y-m-d H:i:s'),
-                'id_destino'           => $_POST['id_destino'],
-                'fecha_entrada'        => $_POST['fecha_entrada'],
-                'hora_entrada'         => $_POST['hora_entrada'],
-                'numero_vuelo_entrada' => $_POST['numero_vuelo_entrada'],
-                'origen_vuelo_entrada' => $_POST['origen_vuelo_entrada'],
-                'fecha_vuelo_salida'   => $_POST['fecha_vuelo_salida'],
-                'hora_vuelo_salida'    => $_POST['hora_vuelo_salida'],
-                'num_viajeros'         => $_POST['num_viajeros'],
-                'id_vehiculo'          => $_POST['id_vehiculo'],
-                'creado_por'           => 'admin'
-            ];
-
-            // Guardar en base de datos
-            $guardado = $reservaModel->crearReserva($datos);
-
-            if ($guardado) {
-                $_SESSION['popup'] = [
-                    'tipo' => 'success',
-                    'texto' => '✅ Reserva creada correctamente.'
-                ];
-                header('Location: ?controller=Admin&action=dashboard');
-                exit();
-            } else {
-                $_SESSION['popup'] = [
-                    'tipo' => 'error',
-                    'texto' => '❌ No se pudo crear la reserva.'
-                ];
-                header('Location: ?controller=Reserva&action=crear'); // o vuelve al formulario
-                exit();
-            }
-        } else {
-            $_SESSION['popup'] = [
-                'tipo' => 'error',
-                'texto' => '⛔ Acceso no válido.'
-            ];
-            header('Location: index.php');
-            exit();
+    /* 1. Validación mínima */
+    $campos = [
+        'email_cliente','id_hotel','id_tipo_reserva','id_destino',
+        'fecha_entrada','hora_entrada','num_viajeros','id_vehiculo'
+    ];
+    foreach ($campos as $c) {
+        if (empty($_POST[$c])) {
+            echo "<p style='color:red;'>Falta el campo $c</p>"; return;
         }
     }
+
+    /* 2. Obtener id_usuario real según email_cliente */
+    require_once __DIR__.'/../models/Usuario.php';
+    $usuarioModel = new Usuario();
+    $cli = $usuarioModel->buscarPorEmail(trim($_POST['email_cliente']));
+    $clienteId = $cli ? $cli['id_usuario'] : null;   // puede ser null
+
+    /* 3. Construir datos y crear reserva */
+    require_once __DIR__.'/../models/Reserva.php';
+    require_once __DIR__.'/../helpers/EmailHelper.php';
+
+    $reservaModel = new Reserva();
+    $datos = [
+        'id_usuario'           => $clienteId,
+        'email_cliente'        => trim($_POST['email_cliente']),
+        'localizador'          => uniqid('RES_'),
+        'id_hotel'             => $_POST['id_hotel'],
+        'id_tipo_reserva'      => $_POST['id_tipo_reserva'],
+        'fecha_reserva'        => date('Y-m-d H:i:s'),
+        'fecha_modificacion'   => date('Y-m-d H:i:s'),
+        'id_destino'           => $_POST['id_destino'],
+        'fecha_entrada'        => $_POST['fecha_entrada'],
+        'hora_entrada'         => $_POST['hora_entrada'],
+        'numero_vuelo_entrada' => $_POST['numero_vuelo_entrada'] ?? null,
+        'origen_vuelo_entrada' => $_POST['origen_vuelo_entrada'] ?? null,
+        'fecha_vuelo_salida'   => $_POST['fecha_vuelo_salida']   ?? null,
+        'hora_vuelo_salida'    => $_POST['hora_vuelo_salida']    ?? null,
+        'numero_vuelo_salida'  => $_POST['numero_vuelo_salida']  ?? null,
+        'hora_recogida'        => $_POST['hora_recogida']        ?? null,
+        'num_viajeros'         => $_POST['num_viajeros'],
+        'id_vehiculo'          => $_POST['id_vehiculo'],
+        'creado_por'           => 'admin'
+    ];
+
+    if ($reservaModel->crearReserva($datos)) {
+
+        /* ─── Enviar e‑mail de confirmación ─── */
+        $body = "
+          <h3>Confirmación de reserva</h3>
+          Localizador: {$datos['localizador']}<br>
+          Hotel: {$datos['id_hotel']}<br>
+          Fecha entrada: {$datos['fecha_entrada']} {$datos['hora_entrada']}<br>
+          Número de viajeros: {$datos['num_viajeros']}
+        ";
+        enviarConfirmacion(
+            $datos['email_cliente'],
+            "Reserva Isla Transfers {$datos['localizador']}",
+            $body
+        );
+        /* ───────────────────────────────────── */
+
+        $_SESSION['popup'] = ['tipo'=>'success','texto'=>'✅ Reserva creada.'];
+        header('Location: ?controller=Admin&action=dashboard'); exit();
+    }
+
+    $_SESSION['popup'] = ['tipo'=>'error','texto'=>'❌ No se pudo crear.'];
+    header('Location: ?controller=Reserva&action=crear'); exit();
+}
+
 
     public function listarTodas() {
         if (!$this->isAdmin()) {

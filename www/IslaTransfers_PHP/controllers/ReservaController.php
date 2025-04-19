@@ -121,66 +121,84 @@ class ReservaController
      * Guarda la reserva de un usuario particular (con restricción 48h).
      */
     public function guardarParticular()
-    {
-        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'particular') {
-            $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '⛔ Acceso no autorizado.'];
-            header('Location: index.php');
+{
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    if ($_SESSION['usuario_rol'] !== 'particular') {
+        $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '⛔ Acceso no autorizado.'];
+        header('Location: index.php');
+        exit();
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '❌ Método no permitido.'];
+        header('Location: ?controller=Reserva&action=crearParticular');
+        exit();
+    }
+
+    /* 1. Validación de 48 h */
+    $fechaEntrada = $_POST['fecha_entrada'] ?? null;
+    $horaEntrada  = $_POST['hora_entrada'] ?? null;
+    if ($fechaEntrada && $horaEntrada) {
+        $trayectoDT = new DateTime("$fechaEntrada $horaEntrada");
+        if ($trayectoDT < (new DateTime())->add(new DateInterval('P2D'))) {
+            $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '⏰ No puedes reservar con menos de 48 h.'];
+            header('Location: ?controller=Reserva&action=crearParticular');
             exit();
         }
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Supongamos que, para particular, el trayecto principal es fecha_entrada+hora_entrada
-            $fechaEntrada = $_POST['fecha_entrada'] ?? null;
-            $horaEntrada  = $_POST['hora_entrada']  ?? null;
-            if ($fechaEntrada && $horaEntrada) {
-                $trayectoDateTime = new DateTime("$fechaEntrada $horaEntrada");
-                $ahora = new DateTime();
-                // Sumamos 48h a la fecha/hora actual
-                $ahoraMas48 = (clone $ahora)->add(new DateInterval('P2D'));
-
-                if ($trayectoDateTime < $ahoraMas48) {
-                    echo "<p style='color:red;'>No puedes reservar con menos de 48 horas de antelación.</p>";
-                    return;
-                }
-            }
-            // O si es “hotel→aeropuerto”, chequear $_POST['fecha_vuelo_salida'] y $_POST['hora_vuelo_salida']
-            // O si es ida y vuelta, chequear ambos.
-
-            // Si pasa la validación 48h, guardamos
-            $datos = [
-                'id_usuario'           => $_SESSION['usuario_id'],
-                'email_cliente'        => $_SESSION['usuario_email'],  // O $_POST, si lo pides
-                'localizador'          => uniqid('RES_'),
-                'id_hotel'             => $_POST['id_hotel'],
-                'id_tipo_reserva'      => $_POST['id_tipo_reserva'],
-                'fecha_reserva'        => date('Y-m-d H:i:s'),
-                'fecha_modificacion'   => date('Y-m-d H:i:s'),
-                'id_destino'           => $_POST['id_destino'],
-                'fecha_entrada'        => $_POST['fecha_entrada'],
-                'hora_entrada'         => $_POST['hora_entrada'],
-                'numero_vuelo_entrada' => $_POST['numero_vuelo_entrada'],
-                'origen_vuelo_entrada' => $_POST['origen_vuelo_entrada'],
-                'fecha_vuelo_salida'   => $_POST['fecha_vuelo_salida'],
-                'hora_vuelo_salida'    => $_POST['hora_vuelo_salida'],
-                'numero_vuelo_salida'  => $_POST['numero_vuelo_salida'],
-                'hora_recogida'        => $_POST['hora_recogida'],
-                'num_viajeros'         => $_POST['num_viajeros'],
-                'id_vehiculo'          => $_POST['id_vehiculo'],
-                'creado_por'           => 'usuario'
-            ];
-
-            $exito = $this->reservaModel->crearReserva($datos);
-            if ($exito) {
-                echo "<p style='color:green;'>Reserva creada correctamente.</p>";
-                // Redirigir a la lista de reservas del usuario
-                header('Location: ?controller=Reserva&action=listar');
-            } else {
-                echo "<p style='color:red;'>Error al crear la reserva.</p>";
-            }
-        } else {
-            echo "Método no permitido.";
-        }
     }
+
+    /* 2. Insertar */
+    require_once __DIR__.'/../helpers/EmailHelper.php';
+    $datos = [
+        'id_usuario'           => $_SESSION['usuario_id'],
+        'email_cliente'        => $_SESSION['usuario_email'],
+        'localizador'          => uniqid('RES_'),
+        'id_hotel'             => $_POST['id_hotel'],
+        'id_tipo_reserva'      => $_POST['id_tipo_reserva'],
+        'fecha_reserva'        => date('Y-m-d H:i:s'),
+        'fecha_modificacion'   => date('Y-m-d H:i:s'),
+        'id_destino'           => $_POST['id_destino'],
+        'fecha_entrada'        => $_POST['fecha_entrada'],
+        'hora_entrada'         => $_POST['hora_entrada'],
+        'numero_vuelo_entrada' => $_POST['numero_vuelo_entrada'] ?? null,
+        'origen_vuelo_entrada' => $_POST['origen_vuelo_entrada'] ?? null,
+        'fecha_vuelo_salida'   => $_POST['fecha_vuelo_salida'] ?? null,
+        'hora_vuelo_salida'    => $_POST['hora_vuelo_salida'] ?? null,
+        'numero_vuelo_salida'  => $_POST['numero_vuelo_salida'] ?? null,
+        'hora_recogida'        => $_POST['hora_recogida'] ?? null,
+        'num_viajeros'         => $_POST['num_viajeros'],
+        'id_vehiculo'          => $_POST['id_vehiculo'],
+        'creado_por'           => 'usuario'
+    ];
+
+    if ($this->reservaModel->crearReserva($datos)) {
+        /* ─── Enviar e‑mail ─── */
+        $body = "
+          <h3>Confirmación de reserva</h3>
+          Localizador: {$datos['localizador']}<br>
+          Hotel: {$datos['id_hotel']}<br>
+          Fecha entrada: {$datos['fecha_entrada']} {$datos['hora_entrada']}<br>
+          Número de viajeros: {$datos['num_viajeros']}
+        ";
+        enviarConfirmacion(
+            $datos['email_cliente'],
+            "Reserva Isla Transfers {$datos['localizador']}",
+            $body
+        );
+        /* ───────────────────── */
+        
+        // Redirigir con mensaje de éxito
+        $_SESSION['popup'] = ['tipo' => 'success', 'texto' => '✅ Reserva creada correctamente.'];
+        header('Location: ?controller=Reserva&action=listar');
+        exit();
+    }
+
+    // En caso de error al guardar
+    $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '❌ Error al crear la reserva.'];
+    header('Location: ?controller=Reserva&action=crearCorporativo');
+    exit();
+}
+
 
     /**
      * Editar reserva como particular, respetando la restricción de 48h.
@@ -381,66 +399,83 @@ class ReservaController
      * Guarda la reserva de un usuario particular (con restricción 48h).
      */
     public function guardarCorporativo()
-    {
-        if (!isset($_SESSION['usuario_rol']) || $_SESSION['usuario_rol'] !== 'corporativo') {
-            $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '⛔ Acceso no autorizado.'];
-            header('Location: index.php');
+{
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    if ($_SESSION['usuario_rol'] !== 'corporativo') {
+        $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '⛔ Acceso no autorizado.'];
+        header('Location: index.php');
+        exit();
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '❌ Método no permitido.'];
+        header('Location: ?controller=Reserva&action=crearCorporativo');
+        exit();
+    }
+
+    /* 1. Validación de 48 h */
+    $fechaEntrada = $_POST['fecha_entrada'] ?? null;
+    $horaEntrada  = $_POST['hora_entrada'] ?? null;
+    if ($fechaEntrada && $horaEntrada) {
+        $trayectoDT = new DateTime("$fechaEntrada $horaEntrada");
+        if ($trayectoDT < (new DateTime())->add(new DateInterval('P2D'))) {
+            $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '⏰ No puedes reservar con menos de 48 h.'];
+            header('Location: ?controller=Reserva&action=crearCorporativo');
             exit();
         }
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Supongamos que, para particular, el trayecto principal es fecha_entrada+hora_entrada
-            $fechaEntrada = $_POST['fecha_entrada'] ?? null;
-            $horaEntrada  = $_POST['hora_entrada']  ?? null;
-            if ($fechaEntrada && $horaEntrada) {
-                $trayectoDateTime = new DateTime("$fechaEntrada $horaEntrada");
-                $ahora = new DateTime();
-                // Sumamos 48h a la fecha/hora actual
-                $ahoraMas48 = (clone $ahora)->add(new DateInterval('P2D'));
-
-                if ($trayectoDateTime < $ahoraMas48) {
-                    echo "<p style='color:red;'>No puedes reservar con menos de 48 horas de antelación.</p>";
-                    return;
-                }
-            }
-            // O si es “hotel→aeropuerto”, chequear $_POST['fecha_vuelo_salida'] y $_POST['hora_vuelo_salida']
-            // O si es ida y vuelta, chequear ambos.
-
-            // Si pasa la validación 48h, guardamos
-            $datos = [
-                'id_usuario'           => $_SESSION['usuario_id'],
-                'email_cliente'        => $_SESSION['usuario_email'],  // O $_POST, si lo pides
-                'localizador'          => uniqid('RES_'),
-                'id_hotel'             => $_POST['id_hotel'],
-                'id_tipo_reserva'      => $_POST['id_tipo_reserva'],
-                'fecha_reserva'        => date('Y-m-d H:i:s'),
-                'fecha_modificacion'   => date('Y-m-d H:i:s'),
-                'id_destino'           => $_POST['id_destino'],
-                'fecha_entrada'        => $_POST['fecha_entrada'],
-                'hora_entrada'         => $_POST['hora_entrada'],
-                'numero_vuelo_entrada' => $_POST['numero_vuelo_entrada'],
-                'origen_vuelo_entrada' => $_POST['origen_vuelo_entrada'],
-                'fecha_vuelo_salida'   => $_POST['fecha_vuelo_salida'],
-                'hora_vuelo_salida'    => $_POST['hora_vuelo_salida'],
-                'numero_vuelo_salida'  => $_POST['numero_vuelo_salida'],
-                'hora_recogida'        => $_POST['hora_recogida'],
-                'num_viajeros'         => $_POST['num_viajeros'],
-                'id_vehiculo'          => $_POST['id_vehiculo'],
-                'creado_por'           => 'usuario'
-            ];
-
-            $exito = $this->reservaModel->crearReserva($datos);
-            if ($exito) {
-                echo "<p style='color:green;'>Reserva creada correctamente.</p>";
-                // Redirigir a la lista de reservas del usuario
-                header('Location: ?controller=Reserva&action=listar');
-            } else {
-                echo "<p style='color:red;'>Error al crear la reserva.</p>";
-            }
-        } else {
-            echo "Método no permitido.";
-        }
     }
+
+    /* 2. Insertar */
+    require_once __DIR__.'/../helpers/EmailHelper.php';
+    $datos = [
+        'id_usuario'           => $_SESSION['usuario_id'],
+        'email_cliente'        => $_SESSION['usuario_email'],
+        'localizador'          => uniqid('RES_'),
+        'id_hotel'             => $_POST['id_hotel'],
+        'id_tipo_reserva'      => $_POST['id_tipo_reserva'],
+        'fecha_reserva'        => date('Y-m-d H:i:s'),
+        'fecha_modificacion'   => date('Y-m-d H:i:s'),
+        'id_destino'           => $_POST['id_destino'],
+        'fecha_entrada'        => $_POST['fecha_entrada'],
+        'hora_entrada'         => $_POST['hora_entrada'],
+        'numero_vuelo_entrada' => $_POST['numero_vuelo_entrada'] ?? null,
+        'origen_vuelo_entrada' => $_POST['origen_vuelo_entrada'] ?? null,
+        'fecha_vuelo_salida'   => $_POST['fecha_vuelo_salida'] ?? null,
+        'hora_vuelo_salida'    => $_POST['hora_vuelo_salida'] ?? null,
+        'numero_vuelo_salida'  => $_POST['numero_vuelo_salida'] ?? null,
+        'hora_recogida'        => $_POST['hora_recogida'] ?? null,
+        'num_viajeros'         => $_POST['num_viajeros'],
+        'id_vehiculo'          => $_POST['id_vehiculo'],
+        'creado_por'           => 'usuario'
+    ];
+
+    if ($this->reservaModel->crearReserva($datos)) {
+        /* ─── Enviar e‑mail ─── */
+        $body = "
+          <h3>Confirmación de reserva</h3>
+          Localizador: {$datos['localizador']}<br>
+          Hotel: {$datos['id_hotel']}<br>
+          Fecha entrada: {$datos['fecha_entrada']} {$datos['hora_entrada']}<br>
+          Número de viajeros: {$datos['num_viajeros']}
+        ";
+        enviarConfirmacion(
+            $datos['email_cliente'],
+            "Reserva Isla Transfers {$datos['localizador']}",
+            $body
+        );
+        /* ───────────────────── */
+        
+        // Redirigir con mensaje de éxito
+        $_SESSION['popup'] = ['tipo' => 'success', 'texto' => '✅ Reserva creada correctamente.'];
+        header('Location: ?controller=Reserva&action=listar');
+        exit();
+    }
+
+    // En caso de error al guardar
+    $_SESSION['popup'] = ['tipo' => 'error', 'texto' => '❌ Error al crear la reserva.'];
+    header('Location: ?controller=Reserva&action=crearCorporativo');
+    exit();
+}
 
     /**
      * Editar reserva como particular, respetando la restricción de 48h.
@@ -619,4 +654,38 @@ class ReservaController
             echo "<p style='color:red;'>Error al cancelar la reserva.</p>";
         }
     }
+
+    /*  Muestra el detalle de una reserva  */
+public function detalle()
+{
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    if (!isset($_SESSION['usuario_id'])) {
+        header('Location: ?controller=Login&action=showLoginForm'); exit();
+    }
+
+    /* id de la reserva en la URL  ?controller=Reserva&action=detalle&id=NN */
+    $id = $_GET['id'] ?? null;
+    if (!$id) { echo "Falta el id de la reserva"; return; }
+
+    require_once __DIR__.'/../models/Reserva.php';
+    $reservaModel = new Reserva();
+    $reserva      = $reservaModel->obtenerReserva($id);
+
+    if (!$reserva) { echo "No se encontró la reserva"; return; }
+
+    /* ---- control de acceso ----
+       El admin puede ver cualquiera;
+       el particular sólo las que son suyas o su email_cliente           */
+    $soyAdmin  = $_SESSION['usuario_rol'] === 'admin';
+    $soyDueño  = $reserva['id_usuario'] == $_SESSION['usuario_id'];
+    $mismoMail = $reserva['email_cliente'] == $_SESSION['usuario_email'];
+
+    if (!$soyAdmin && !$soyDueño && !$mismoMail) {
+        echo "⛔ No tienes permiso para ver esta reserva";
+        return;
+    }
+
+    /* Pasamos $reserva a la vista */
+    require __DIR__.'/../views/reservas/detalle_reserva.php';
+}
 }

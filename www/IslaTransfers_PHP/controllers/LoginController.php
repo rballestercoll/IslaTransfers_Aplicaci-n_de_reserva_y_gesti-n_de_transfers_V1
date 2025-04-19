@@ -27,6 +27,7 @@ class LoginController {
                 // Credenciales correctas
                 $_SESSION['usuario_id']    = $usuario['id_usuario'];
                 $_SESSION['usuario_email'] = $usuario['email'];
+                $_SESSION['usuario_nombre'] = $usuario['nombre'];
                 $_SESSION['usuario_rol']   = $usuario['rol'];
 
                 // Redirigir según rol

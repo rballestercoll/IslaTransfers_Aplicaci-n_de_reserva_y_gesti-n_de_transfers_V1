@@ -1,6 +1,8 @@
 <?php require_once __DIR__.'/../templates/header.php'; ?>
 <main class="page-content">
   <h1>Mi perfil</h1><br>
+  <p><strong>Mi nombre:</strong> <?= htmlspecialchars($_SESSION['usuario_nombre'] ?? 'Desconocido') ?></p>
+  <p><strong>Rol:</strong> <?= htmlspecialchars($_SESSION['usuario_rol'] ?? 'Sin rol') ?></p><br><br>
   <h2>Actualizar datos del Perfil</h2><br>
   
   <form action="?controller=Perfil&action=actualizar" method="POST">

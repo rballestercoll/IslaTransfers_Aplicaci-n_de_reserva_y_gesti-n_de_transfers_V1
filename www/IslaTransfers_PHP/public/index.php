@@ -103,6 +103,70 @@ if (isset($_GET['controller']) && isset($_GET['action'])) {
       </section>
     </main>
 
+    <style>
+      .presentacion {
+    text-align: center;
+    margin: 40px 0;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.presentacion h2 {
+    font-size: 2rem;
+    color: #343a40;
+    margin-bottom: 20px;
+}
+
+.presentacion p {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* Información destacada */
+.info-destacada {
+    background-color: #007bff;
+    color: #fff;
+    padding: 30px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 40px 0;
+}
+
+.info-destacada h3 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+
+.info-destacada ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.info-destacada li {
+    font-size: 1.2rem;
+    margin: 10px 0;
+}
+
+.boton-cta {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px 24px;
+    margin: 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.boton-cta:hover {
+    background-color: #0056b3;
+}
+      </style>
     <?php
     // Pie de página
     require_once __DIR__ . '/../views/templates/footer.php';
