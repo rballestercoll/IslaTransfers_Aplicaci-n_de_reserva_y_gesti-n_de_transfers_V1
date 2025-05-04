@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: mi_apache
     volumes:
-      - ./www/IslaTransfers_PHP:/var/www/html
+      - ./www/isla-transfers-laravel:/var/www/html
     ports:
       - "80:80"
     depends_on:

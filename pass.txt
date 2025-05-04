@@ -1,1 +1,38 @@
 5Vxs!C%L0j)3U45WRl
+
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=base64:cxVhEET4Wcqx4EO7pGi2lt5Uf9bnnuDfv7p1AsZ31ro=
+APP_DEBUG=true
+APP_URL=http://localhost
+
+
+
+
+
+APPSERVICEPROVIDER
+
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        //
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        //
+    }
+}
