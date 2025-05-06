@@ -31,3 +31,20 @@ Verifica la instalación ejecutando:
 ```bash
 composer --version
 ```
+
+🔸 Método rápido (con Homebrew):
+Si tienes Homebrew instalado, ejecuta en Terminal:
+
+brew install composer
+Verifica la instalación:
+
+composer -v
+🔸 Alternativa (Manual):
+Ejecuta estos comandos uno a uno desde tu terminal:
+
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+rm composer-setup.php
+Comprueba que funcione:
+
+composer -v
