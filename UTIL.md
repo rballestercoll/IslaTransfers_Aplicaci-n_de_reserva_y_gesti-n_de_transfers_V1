@@ -48,3 +48,20 @@ rm composer-setup.php
 Comprueba que funcione:
 
 composer -v
+
+APP_NAME="Isla Transfers"
+APP_ENV=production
+APP_KEY=base64:cxVhEET4Wcqx4EO7pGi2lt5Uf9bnnuDfv7p1AsZ31ro=
+APP_DEBUG=true
+APP_URL=https://fp064.techlab.uoc.edu/~uocx5/producto3
+
+LOG_CHANNEL=stack
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=error
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=islatransfers_db
+DB_USERNAME=user
+DB_PASSWORD=userpass
