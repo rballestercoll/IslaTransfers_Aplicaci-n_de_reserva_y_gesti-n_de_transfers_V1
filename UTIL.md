@@ -32,6 +32,8 @@ Verifica la instalación ejecutando:
 composer --version
 ```
 
+---
+
 🔸 Método rápido (con Homebrew):
 Si tienes Homebrew instalado, ejecuta en Terminal:
 
@@ -47,7 +49,7 @@ sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 rm composer-setup.php
 Comprueba que funcione:
 
-composer -v
+## composer -v
 
 APP_NAME="Isla Transfers"
 APP_ENV=production
@@ -65,3 +67,23 @@ DB_PORT=3306
 DB_DATABASE=islatransfers_db
 DB_USERNAME=user
 DB_PASSWORD=userpass
+
+---
+
+docker exec -it mi_apache bash  
+cd /var/www/html  
+php artisan key:generate  
+php artisan config:clear
+
+---
+
+docker-compose down
+docker-compose build
+docker-compose up -d
+
+---
+
+php artisan migrate:generate \
+ --connection=mysql \
+ --tables=transfer_reservas,transfer_precios,transfer_hotel \
+ --path=database/migrations/imported
