@@ -87,3 +87,46 @@ php artisan migrate:generate \
  --connection=mysql \
  --tables=transfer_reservas,transfer_precios,transfer_hotel \
  --path=database/migrations/imported
+
+---
+
+1. Seeder para el primer usuario admin
+
+Es conveniente que al menos un usuario administrador exista desde el arranque. Crea un seeder que lo genere:
+
+php artisan make:seeder AdminUserSeeder
+
+<?php
+// database/seeders/AdminUserSeeder.php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+
+class AdminUserSeeder extends Seeder
+{
+    public function run()
+    {
+        User::firstOrCreate(
+            ['email' => 'admin@islatransfers.com'],
+            [
+                'name'     => 'Administrador',
+                'password' => Hash::make('tu-contraseña-segura'),
+            ]
+        )->assignRole('admin');
+    }
+}
+Y añádelo en tu DatabaseSeeder.php antes de RolesSeeder (para que el rol exista ya):
+
+public function run(): void
+{
+    $this->call([
+        RolesSeeder::class,
+        AdminUserSeeder::class,
+        // ZoneSeeder::class,
+        // VehicleSeeder::class,
+    ]);
+}
+Así, cuando hagas php artisan migrate:fresh --seed, tendrás un usuario admin@… con rol admin.
