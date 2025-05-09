@@ -155,7 +155,11 @@ return [
     |
     */
 
+<<<<<<< HEAD
     'domain' => env('SESSION_DOMAIN'),
+=======
+    'domain' => 'localhost',
+>>>>>>> origin/PaulaC2
 
     /*
     |--------------------------------------------------------------------------
@@ -198,6 +202,7 @@ return [
 
     'same_site' => 'lax',
 
+<<<<<<< HEAD
     /*
     |--------------------------------------------------------------------------
     | Partitioned Cookies
@@ -211,4 +216,6 @@ return [
 
     'partitioned' => false,
 
+=======
+>>>>>>> origin/PaulaC2
 ];

@@ -220,6 +220,18 @@ class AdminController {
         return isset($_SESSION['usuario_rol']) && $_SESSION['usuario_rol'] === 'admin';
     }
 
+<<<<<<< HEAD
+=======
+    public function show($id)
+    {
+        $reserva = TransferReserva::with(['hotel', 'vehiculo', 'viajeros', 'tipo'])
+            ->where('id_reserva', $id)
+            ->firstOrFail();
+
+        return view('admin.reservas.show', compact('reserva'));
+    }
+
+>>>>>>> origin/PaulaC2
     public function calendarEvents() {
         if (!$this->isAdmin()) {
             // O devuelves un JSON vacío

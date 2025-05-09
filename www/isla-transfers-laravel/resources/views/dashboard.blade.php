@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -15,3 +16,21 @@
         </div>
     </div>
 </x-app-layout>
+=======
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Bienvenido, {{ Auth::user()->nombre }}!</h1>
+    <p>Tu rol es: {{ Auth::user()->rol }}</p>
+
+    <form method="POST" action="/logout">
+        @csrf
+        <button type="submit">Cerrar sesión</button>
+    </form>
+</body>
+</html>
+
+>>>>>>> origin/PaulaC2

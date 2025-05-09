@@ -48,7 +48,11 @@ class Kernel extends HttpKernel
     /**
      * The application's middleware aliases.
      *
+<<<<<<< HEAD
      * Aliases may be used instead of class names to conveniently assign middleware to routes and groups.
+=======
+     * Aliases may be used to conveniently assign middleware to routes and groups.
+>>>>>>> origin/PaulaC2
      *
      * @var array<string, class-string|string>
      */
@@ -60,7 +64,10 @@ class Kernel extends HttpKernel
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+<<<<<<< HEAD
         'precognitive' => \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
+=======
+>>>>>>> origin/PaulaC2
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,

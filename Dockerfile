@@ -1,5 +1,9 @@
 # Usa la imagen oficial de PHP 8.1 con Apache
+<<<<<<< HEAD
 FROM php:8.2-apache
+=======
+FROM php:8.1-apache
+>>>>>>> origin/PaulaC2
 
 # Instala dependencias y extensiones necesarias
 RUN apt-get update \

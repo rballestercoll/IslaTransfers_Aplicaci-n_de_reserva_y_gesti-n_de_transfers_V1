@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+<<<<<<< HEAD
         // Llama aquí a todos los seeders necesarios, en el orden que desees ejecutar.
         $this->call([
             RolesSeeder::class,
@@ -23,3 +24,11 @@ class DatabaseSeeder extends Seeder
         ]);
     }
 }
+=======
+        $this->call([
+            AdminUserSeeder::class,
+        ]);
+    }
+
+}
+>>>>>>> origin/PaulaC2
