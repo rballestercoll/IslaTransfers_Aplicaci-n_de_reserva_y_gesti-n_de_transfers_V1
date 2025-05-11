@@ -118,6 +118,7 @@ Route::put('/hotel/reserva/editar/ida-vuelta', [HotelController::class, 'updateR
 Route::delete('/hotel/reserva/eliminar/{id}', [HotelController::class, 'destroy'])->name('hotel.reserva.destroy');//eliminar las reservas
 
 Route::get('/hotel/comisiones', [HotelComisionController::class, 'verComisionesMensuales'])->name('hotel.comisiones'); //
+Route::get('/admin/hoteles/resumen', [AdminHotelController::class, 'resumenReservas'])->name('admin.hoteles.resumen');
 
 
 Route::get('/admin/estadisticas-zonas', [AdminReservaController::class, 'estadisticasPorZona']);//Ver JSON

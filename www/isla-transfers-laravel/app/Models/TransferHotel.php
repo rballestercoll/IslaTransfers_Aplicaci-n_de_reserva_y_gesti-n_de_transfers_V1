@@ -28,8 +28,15 @@ class TransferHotel extends Authenticatable
         'password',
     ];
 
+    // Relación con zona
     public function zona()
     {
         return $this->belongsTo(TransferZona::class, 'id_zona', 'id_zona');
+    }
+
+    // ✅ Relación con reservas
+    public function reservas()
+    {
+        return $this->hasMany(\App\Models\TransferReserva::class, 'id_hotel', 'id_hotel');
     }
 }

@@ -20,7 +20,6 @@ class AdminHotelController extends Controller
         $hoteles = TransferHotel::all();
         $zonas = TransferZona::all();
 
-
         return view('panel.admin.hotel.adminHotel', compact('hoteles', 'zonas'));
     }
 
@@ -98,5 +97,30 @@ class AdminHotelController extends Controller
         $hotel->delete();
 
         return redirect()->route('admin.hoteles.index')->with('success', 'Hotel eliminado correctamente');
+    }
+
+    public function resumenReservas()
+    {
+        if (!Session::has('id_admin')) return redirect()->route('login');
+
+        $hoteles = \App\Models\TransferHotel::with('reservas')->get();
+
+        $resumen = $hoteles->map(function ($hotel) {
+            $totalReservas = $hotel->reservas->count();
+            $totalPasajeros = $hotel->reservas->sum('num_viajeros');
+            $comision = $hotel->comision ?? 0;
+            $totalComision = $totalReservas * $comision;
+
+            return [
+                'descripcion' => $hotel->descripcion ?? $hotel->nombre_hotel ?? 'Sin nombre',
+                'email' => $hotel->email_hotel,
+                'reservas' => $totalReservas,
+                'pasajeros' => $totalPasajeros,
+                'comision' => $comision,
+                'total' => $totalComision,
+            ];
+        });
+
+        return view('panel.admin_hotel_resumen', compact('resumen'));
     }
 }

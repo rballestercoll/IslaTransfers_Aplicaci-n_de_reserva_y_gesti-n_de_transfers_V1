@@ -101,10 +101,14 @@
       <i class="fa-solid fa-circle-plus me-2"></i> Reserva ida y vuelta
     </button>
     <a href="{{ url('/admin/estadisticas-zonas') }}" target="_blank"
-       class="btn btn-secondary">
+      class="btn btn-secondary">
       <i class="fa-solid fa-chart-bar me-2"></i> Estadísticas (JSON)
     </a>
+    <a href="{{ route('admin.hoteles.resumen') }}" class="btn btn-warning">
+      <i class="fa-solid fa-file-invoice-dollar me-2"></i> Resumen hoteles (comisiones)
+    </a>
   </div>
+
 
   <div class="card-calendar">
     <div id="calendar"></div>

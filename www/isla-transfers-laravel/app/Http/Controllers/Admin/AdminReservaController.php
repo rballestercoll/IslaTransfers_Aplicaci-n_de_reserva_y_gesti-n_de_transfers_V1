@@ -8,6 +8,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\{TransferReserva, TransferHotel};
 
 class AdminReservaController extends Controller
@@ -17,43 +18,43 @@ class AdminReservaController extends Controller
     ============================================================*/
     public function storeOneWay(Request $request)
     {
-        $validated = $request->validate([
-            'uuid'                => 'required|string|max:255',
-            'bookingDate'         => 'required|date',
-            'bookingTime'         => 'required',
-            'flyNumber'           => 'required|string|max:255',
-            'originAirport'       => 'required|string|max:255',
-            'hotelSelect'         => 'required|integer',
-            'carSelect'           => 'required|integer',
-            'passengerNum'        => 'required|integer|min:1',
-            'customerEmailSelect' => 'required|email',
-        ]);
+        \Log::info('🟡 Entrando en storeOneWay - MODO DATOS REALES');
 
-        /* Comprobamos que el hotel existe para no violar la FK.  
-           Si no existe devolvemos error al formulario. */
-        if (!TransferHotel::where('id_hotel', $validated['hotelSelect'])->exists()) {
-            return back()->withErrors(['hotelSelect' => 'El hotel seleccionado no existe'])->withInput();
+        $validated = $request->all(); // Sin validación estricta aún
+        \Log::info('📥 Datos recibidos:', $validated);
+
+        try {
+            $reserva = \App\Models\TransferReserva::create([
+                'id_usuario'           => Auth::id() ?? session('id_admin') ?? 1,
+                'localizador'          => $validated['uuid'] ?? 'NO-UUID',
+                'id_hotel'             => $validated['hotelSelect'] ?? 'HOTEL_BAHIA',
+                'id_destino'           => $validated['hotelSelect'] ?? 'HOTEL_BAHIA',
+                'id_tipo_reserva'      => 1,
+                'email_cliente'        => $validated['customerEmailSelect'] ?? 'sin@email.com',
+                'fecha_entrada'        => $validated['bookingDate'] ?? now()->toDateString(),
+                'hora_entrada'         => $validated['bookingTime'] ?? '12:00:00',
+                'numero_vuelo_entrada' => $validated['flyNumber'] ?? 'SIN-VUELO',
+                'origen_vuelo_entrada' => $validated['originAirport'] ?? 'ORIGEN',
+                'fecha_vuelo_salida'   => $validated['bookingDate'] ?? now()->toDateString(),
+                'hora_vuelo_salida'    => $validated['bookingTime'] ?? '12:00:00',
+                'hora_recogida'        => $validated['bookingTime'] ?? '12:00:00',
+                'num_viajeros'         => $validated['passengerNum'] ?? 1,
+                'id_vehiculo'          => $validated['carSelect'] ?? 'VEH_LUX4',
+                'creado_por'           => 'admin',
+                'fecha_reserva'        => now(),
+                'fecha_modificacion'   => now(),
+            ]);
+
+            \Log::info('✅ ¡Reserva guardada con datos del formulario!', $reserva->toArray());
+
+            return redirect()->route('admin.panel')->with('success', 'Reserva registrada correctamente');
+        } catch (\Exception $e) {
+            \Log::error('❌ Error al guardar reserva: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'No se pudo guardar la reserva.'])->withInput();
         }
-
-        TransferReserva::create([
-            'id_usuario'           => Auth::id() ?? 0,
-            'localizador'          => $validated['uuid'],
-            'id_hotel'             => $validated['hotelSelect'],
-            'id_tipo_reserva'      => 1, // solo ida
-            'email_cliente'        => $validated['customerEmailSelect'],
-            'id_destino'           => $validated['hotelSelect'],
-            'fecha_entrada'        => $validated['bookingDate'],
-            'hora_entrada'         => $validated['bookingTime'],
-            'numero_vuelo_entrada' => $validated['flyNumber'],
-            'origen_vuelo_entrada' => $validated['originAirport'],
-            'num_viajeros'         => $validated['passengerNum'],
-            'id_vehiculo'          => $validated['carSelect'],
-            'creado_por'           => 'admin',
-            // Los campos de salida quedan null (permitido por la migration nullable)
-        ]);
-
-        return redirect()->route('admin.panel')->with('success', 'Reserva de ida creada correctamente');
     }
+
+
 
     /*============================================================
     | RESERVA SOLO VUELTA  (Hotel  -> Aeropuerto)                |
@@ -65,8 +66,8 @@ class AdminReservaController extends Controller
             'dateFly'             => 'required|date',
             'timeFly'             => 'required',
             'pickupTime'          => 'required',
-            'hotelSelect'         => 'required|integer',
-            'carSelect'           => 'required|integer',
+            'hotelSelect'         => 'required|exists:transfer_hotel,id_hotel',
+            'carSelect'           => 'required|string|exists:transfer_vehiculo,id_vehiculo',
             'passengerNum'        => 'required|integer|min:1',
             'customerEmailSelect' => 'required|email',
         ]);
@@ -75,23 +76,32 @@ class AdminReservaController extends Controller
             return back()->withErrors(['hotelSelect' => 'El hotel seleccionado no existe'])->withInput();
         }
 
-        TransferReserva::create([
-            'id_usuario'           => Auth::id() ?? 0,
-            'localizador'          => $validated['uuid'],
-            'id_hotel'             => $validated['hotelSelect'],
-            'id_tipo_reserva'      => 2, // solo vuelta
-            'email_cliente'        => $validated['customerEmailSelect'],
-            'id_destino'           => $validated['hotelSelect'],
-            'fecha_vuelo_salida'   => $validated['dateFly'],
-            'hora_vuelo_salida'    => $validated['timeFly'],
-            'hora_recogida_salida' => $validated['pickupTime'],
-            'num_viajeros'         => $validated['passengerNum'],
-            'id_vehiculo'          => $validated['carSelect'],
-            'creado_por'           => 'admin',
-        ]);
+        try {
+            $reserva = TransferReserva::create([
+                'id_usuario' => Auth::id() ?? session('id_admin') ?? 1,
+                'localizador'          => $validated['uuid'],
+                'id_hotel'             => $validated['hotelSelect'],
+                'id_destino'           => $validated['hotelSelect'],
+                'id_tipo_reserva'      => 2,
+                'email_cliente'        => $validated['customerEmailSelect'],
+                'fecha_vuelo_salida'   => $validated['dateFly'],
+                'hora_vuelo_salida'    => $validated['timeFly'],
+                'hora_recogida_salida' => $validated['pickupTime'],
+                'num_viajeros'         => $validated['passengerNum'],
+                'id_vehiculo'          => $validated['carSelect'],
+                'creado_por'           => 'admin',
+                'fecha_reserva'        => now(),
+                'fecha_modificacion'   => now(),
+            ]);
+            \Log::info('Reserva de solo vuelta guardada correctamente', $reserva->toArray());
+        } catch (\Exception $e) {
+            \Log::error('Error al guardar reserva de solo vuelta: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Error al guardar la reserva'])->withInput();
+        }
 
         return redirect()->route('admin.panel')->with('success', 'Reserva de vuelta creada correctamente');
     }
+
 
     /*============================================================
     | RESERVA IDA + VUELTA                                       |
@@ -107,8 +117,8 @@ class AdminReservaController extends Controller
             'dateFly'             => 'required|date',
             'timeFly'             => 'required',
             'pickupTime'          => 'required',
-            'hotelSelect'         => 'required|integer',
-            'carSelect'           => 'required|integer',
+            'hotelSelect'         => 'required',
+            'carSelect'           => 'required',
             'passengerNum'        => 'required|integer|min:1',
             'customerEmailSelect' => 'required|email',
         ]);
@@ -117,30 +127,35 @@ class AdminReservaController extends Controller
             return back()->withErrors(['hotelSelect' => 'El hotel seleccionado no existe'])->withInput();
         }
 
-        TransferReserva::create([
-            'id_usuario'           => Auth::id() ?? 0,
-            'localizador'          => $validated['uuid'],
-            'id_hotel'             => $validated['hotelSelect'],
-            'id_tipo_reserva'      => 3, // ida + vuelta
-            'email_cliente'        => $validated['customerEmailSelect'],
-            'id_destino'           => $validated['hotelSelect'],
-            // Ida
-            'fecha_entrada'        => $validated['bookingDate'],
-            'hora_entrada'         => $validated['bookingTime'],
-            'numero_vuelo_entrada' => $validated['flyNumber'],
-            'origen_vuelo_entrada' => $validated['originAirport'],
-            // Vuelta
-            'fecha_vuelo_salida'   => $validated['dateFly'],
-            'hora_vuelo_salida'    => $validated['timeFly'],
-            'hora_recogida_salida' => $validated['pickupTime'],
-            'num_viajeros'         => $validated['passengerNum'],
-            'id_vehiculo'          => $validated['carSelect'],
-            'creado_por'           => 'admin',
-        ]);
+        try {
+            $reserva = TransferReserva::create([
+                'id_usuario' => Auth::id() ?? session('id_admin') ?? 1,
+                'localizador'          => $validated['uuid'],
+                'id_hotel'             => $validated['hotelSelect'],
+                'id_destino'           => $validated['hotelSelect'],
+                'id_tipo_reserva'      => 3,
+                'email_cliente'        => $validated['customerEmailSelect'],
+                'fecha_entrada'        => $validated['bookingDate'],
+                'hora_entrada'         => $validated['bookingTime'],
+                'numero_vuelo_entrada' => $validated['flyNumber'],
+                'origen_vuelo_entrada' => $validated['originAirport'],
+                'fecha_vuelo_salida'   => $validated['dateFly'],
+                'hora_vuelo_salida'    => $validated['timeFly'],
+                'hora_recogida_salida' => $validated['pickupTime'],
+                'num_viajeros'         => $validated['passengerNum'],
+                'id_vehiculo'          => $validated['carSelect'],
+                'creado_por'           => 'admin',
+                'fecha_reserva'        => now(),
+                'fecha_modificacion'   => now(),
+            ]);
+            \Log::info('Reserva ida y vuelta guardada correctamente', $reserva->toArray());
+        } catch (\Exception $e) {
+            \Log::error('Error al guardar reserva ida y vuelta: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Error al guardar la reserva'])->withInput();
+        }
 
         return redirect()->route('admin.panel')->with('success', 'Reserva de ida y vuelta creada correctamente');
     }
-
 
 
     public function show($id)
@@ -157,8 +172,8 @@ class AdminReservaController extends Controller
         $request->validate([
             'uuid' => 'required|string|max:255',
             'customerEmailSelect' => 'required|email',
-            'hotelSelect' => 'nullable|integer',
-            'carSelect' => 'nullable|integer',
+            'hotelSelect' => 'nullable',
+            'carSelect' => 'nullable',
             'passengerNum' => 'nullable|integer|min:1',
         ]);
 
