@@ -1,60 +1,87 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View
+    public function edit()
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
-    }
+        $rol = session('rol');
+        $id = null;
+        $user = null;
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        switch ($rol) {
+            case 'admin':
+                $id = session('id_admin');
+                $user = DB::table('transfer_admin')->where('id_admin', $id)->first();
+                break;
+            case 'cliente':
+                $id = session('id_viajero');
+                $user = DB::table('transfer_viajeros')->where('id_viajero', $id)->first();
+                break;
+            case 'hotel':
+                $id = session('id_hotel');
+                $user = DB::table('transfer_hotel')->where('id_hotel', $id)->first();
+                break;
         }
 
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return view('profile.edit', compact('user', 'rol'));
     }
 
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
+    public function update(Request $request)
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
+        $rol = session('rol');
+        $id = null;
+        $data = [];
+
+        // Validación básica
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'email' => 'required|email',
+            'password' => 'nullable|string|min:4|confirmed',
         ]);
 
-        $user = $request->user();
+        switch ($rol) {
+            case 'admin':
+                $id = session('id_admin');
+                $data = [
+                    'nombre' => $request->nombre,
+                    'email_admin' => $request->email,
+                ];
+                if ($request->filled('password')) {
+                    $data['password'] = bcrypt($request->password);
+                }
+                DB::table('transfer_admin')->where('id_admin', $id)->update($data);
+                break;
 
-        Auth::logout();
+            case 'cliente':
+                $id = session('id_viajero');
+                $data = [
+                    'nombre' => $request->nombre,
+                    'email' => $request->email,
+                ];
+                if ($request->filled('password')) {
+                    $data['password'] = bcrypt($request->password);
+                }
+                DB::table('transfer_viajeros')->where('id_viajero', $id)->update($data);
+                break;
 
-        $user->delete();
+            case 'hotel':
+                $id = session('id_hotel');
+                $data = [
+                    'nombre_hotel' => $request->nombre,
+                    'email_hotel' => $request->email,
+                ];
+                if ($request->filled('password')) {
+                    $data['password'] = bcrypt($request->password);
+                }
+                DB::table('transfer_hotel')->where('id_hotel', $id)->update($data);
+                break;
+        }
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        return redirect()->back()->with('success', 'Perfil actualizado correctamente.');
     }
 }

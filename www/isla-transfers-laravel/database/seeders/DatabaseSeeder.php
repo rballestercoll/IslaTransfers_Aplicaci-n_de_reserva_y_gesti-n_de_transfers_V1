@@ -12,14 +12,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Llama aquí a todos los seeders necesarios, en el orden que desees ejecutar.
-        $this->call([
-            RolesSeeder::class,
-            transfer_hotel::class,       
-            transfer_precios::class,    
-            transfer_vehiculo::class,
-            transfer_zona::class, 
-            AdminUserSeeder::class,      
-        ]);
+        // \App\Models\User::factory(10)->create();
+
+        // \App\Models\User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
     }
 }
