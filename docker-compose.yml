@@ -3,18 +3,17 @@ version: "3.8"
 services:
   web:
     build:
-      context: . # El punto indica que el Dockerfile está en la raíz
+      context: . # El Dockerfile está en la raíz
       dockerfile: Dockerfile
     container_name: mi_apache
-    volumes:
-      - ./www/isla-transfers-laravel:/var/www/html
     ports:
       - "80:80"
     depends_on:
       - db
-    command: >
-      bash -c "sed -ri -e 's!/var/www/html!/var/www/html/public!g' 
-      /etc/apache2/sites-available/000-default.conf && apache2-foreground"
+    volumes:
+      # Opcional en desarrollo (quita esto si haces entrega o build limpio)
+      - ./www/isla-transfers-laravel:/var/www/html
+      - ./apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
 
   db:
     image: mysql:8
@@ -26,7 +25,6 @@ services:
       MYSQL_PASSWORD: userpass
     ports:
       - "3310:3306"
-    # Agregamos la persistencia de datos en un volumen:
     volumes:
       - db_data:/var/lib/mysql
 
@@ -51,10 +49,9 @@ services:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: user
       WORDPRESS_DB_PASSWORD: userpass
-      WORDPRESS_DB_NAME: PHPeros_db
+      WORDPRESS_DB_NAME: islatransfers_db
     ports:
       - "8081:80"
 
-# Declaramos el volumen para almacenar los datos de la BD
 volumes:
   db_data:

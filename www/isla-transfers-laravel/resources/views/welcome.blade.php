@@ -150,11 +150,11 @@
 
 {{-- Collage de imágenes --}}
 <section class="gallery">
-  <img src="{{ asset('images/transfer1.png') }}" alt="Transfer 1">
-  <img src="{{ asset('images/transfer2.png') }}" alt="Transfer 2">
-  <img src="{{ asset('images/transfer3.png') }}" alt="Transfer 3">
-  <img src="{{ asset('images/transfer4.png') }}" alt="Transfer 4">
-  <img src="{{ asset('images/transfer5.png') }}" alt="Transfer 5">
+  <img src="{{ asset('images/Transfer1.png') }}" alt="Transfer 1">
+  <img src="{{ asset('images/Transfer2.png') }}" alt="Transfer 2">
+  <img src="{{ asset('images/Transfer3.png') }}" alt="Transfer 3">
+  <img src="{{ asset('images/Transfer4.png') }}" alt="Transfer 4">
+  <img src="{{ asset('images/Transfer5.png') }}" alt="Transfer 5">
 </section>
 
 {{-- Sección explicativa --}}
