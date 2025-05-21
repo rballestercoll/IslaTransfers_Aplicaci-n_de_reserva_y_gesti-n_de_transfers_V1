@@ -1,0 +1,12 @@
+[
+  {
+    "descripcion": "Zona Norte",
+    "num_reservas": 15,
+    "porcentaje": 37.5
+  },
+  {
+    "descripcion": "Zona Sur",
+    "num_reservas": 25,
+    "porcentaje": 62.5
+  }
+]

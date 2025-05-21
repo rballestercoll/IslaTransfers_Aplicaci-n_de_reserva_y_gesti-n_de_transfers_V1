@@ -52,6 +52,10 @@ services:
       WORDPRESS_DB_NAME: islatransfers_db
     ports:
       - "8081:80"
+    volumes:
+      - ./custom.ini:/usr/local/etc/php/conf.d/custom.ini   
+      - ./www/isla-transfers-laravel/wp-content:/var/www/html/wp-content
+      
 
 volumes:
   db_data:

@@ -221,27 +221,14 @@ class AdminReservaController extends Controller
         return view('panel.admin_list', compact('reservas'));
     }
 
-    public function estadisticasPorZona()
+ public function estadisticasPorZona()
 {
-    if (!session()->has('id_admin')) {
-        return response()->json(['error' => 'Acceso no autorizado.'], 403);
-    }
+    $zonas = DB::table('transfer_zona')
+        ->select('id_zona', 'descripcion')
+        ->get();
 
-    $total = DB::table('transfer_reservas')->count();
-
-    $estadisticas = DB::table('transfer_reservas')
-        ->join('transfer_hotel', 'transfer_reservas.id_destino', '=', 'transfer_hotel.id_hotel')
-        ->join('transfer_zona', 'transfer_hotel.id_zona', '=', 'transfer_zona.id_zona')
-        ->select('transfer_zona.descripcion', DB::raw('COUNT(*) as num_reservas'))
-        ->groupBy('transfer_zona.descripcion')
-        ->get()
-        ->map(function ($zona) use ($total) {
-            $zona->porcentaje = round(($zona->num_reservas / $total) * 100, 2);
-            return $zona;
-        });
-
-    return response()->json($estadisticas, 200, [], JSON_PRETTY_PRINT);
-
+    return response()->json($zonas, 200, [], JSON_PRETTY_PRINT);
 }
+
 
 }
